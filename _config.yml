@@ -1,7 +1,7 @@
 title: Matt Konda
 description: |
-  Entrepreneur
-  Security Leader
+  Entrepreneur | 
+  Security Leader | 
   Developer
 owner: Matt Konda
 first_published: 2012
@@ -12,8 +12,8 @@ social:
   twitter: https://twitter.com/mkonda
   github: https://github.com/mkonda
   linkedin-square: https://linkedin.com/in/matthewkonda
-  google-plus-square: https://plus.google.com/u/0/+<username>
-  email: /contact/
+  google-plus-square: https://plus.google.com/+MattKonda
+  email: mailto:mattkonda@gmail.com
   #flickr:
   #instagram:
   #youtube-square:
@@ -50,5 +50,8 @@ social:
 
 # Build settings
 markdown: kramdown
+
+future: true
+
 #sass:
 #  style: compressed

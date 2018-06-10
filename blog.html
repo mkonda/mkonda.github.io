@@ -1,0 +1,13 @@
+---
+layout: page
+title: Blog
+---
+<h3>Here are my most recent blog posts.</h3>
+<p>See my posts on the <a href="https://jemurai.com/blog/">Jemurai Blog</a> for posts specific to that business and domain.</p>
+<ul>
+    {% for post in site.posts limit:12 %}
+      <li>
+        <a href="{{ post.url }}">{{ post.date | date: "%B %-d, %Y" }} - {{ post.title }}</a>
+      </li>
+    {% endfor %}
+  </ul>
