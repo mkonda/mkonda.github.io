@@ -1,8 +1,8 @@
 ---
 layout: post
 title:  "Personal Blog Reboot"
-date:   2018-06-10 16:16:01 -0600
-categories: website
+date:   2018-06-10
+categories: meta
 ---
 
 You might think this looks sparse here, by itself with so few posts since 2014, and you'd be correct.

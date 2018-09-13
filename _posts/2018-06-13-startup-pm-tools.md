@@ -1,7 +1,7 @@
 ---
 layout: post
 title:  "Startup Project Management Tools"
-date:   2018-06-13 16:16:01 -0600
+date:   2018-06-13
 categories: meta
 ---
 
