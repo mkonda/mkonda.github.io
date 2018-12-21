@@ -97,7 +97,7 @@ But soon, I will definitely continue to invest my time in OWASP:
 
 When I joined the Board, I consciously stopped submitting talks for a lot of events because I didn't think it was fair to put the organizers and selection committees in a position where they might feel conflicted saying no to a Board member's submission.  I may start submitting talks again ... 
 
-I hope to see lots of OWASP folks for years to come.  I will absolutely seek out opportunities to connect people to make great things happen.  I invite you to email me: matt.konda@owasp.org.  I promise you that communications on that channel will stay "open" and keep the OWASP values will be maintained there.
+I hope to see lots of OWASP folks for years to come.  I will absolutely seek out opportunities to connect people to make great things happen.  I invite you to email me: matt.konda@owasp.org.  I promise that communications on that channel will stay "open" and non-commercial.
 
 ## The Future of the Board
 
