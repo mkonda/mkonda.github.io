@@ -5,9 +5,9 @@ date:   2018-12-21
 categories: owasp
 ---
 
-I ran for the OWASP Global Board in 2014 and started serving in 2015.
+I ran for the OWASP Global Board in 2014 and started serving in 2015.  Board members are term limited to 4 years so my time on the board is coming to a close with the end of 2018.
 
-At that time, the current sitting board included:  Michael Coates (Twitter CSO), Tobias Gondrom (Huawei CSO), Fabio Cerullo, Andrew van der Stock, Jim Manico and others.  I mean, these were freaking legends ... household names in AppSec ... and highly accomplished leaders.  You can see it all clearly in [this picture](https://www.owasp.org/index.php/OWASP_Board_History).
+At the time I joined the board, the current sitting board members included:  Michael Coates (Twitter CSO), Tobias Gondrom (Huawei CSO), Fabio Cerullo, Andrew van der Stock, Jim Manico and others.  I mean, these were freaking legends ... household names in AppSec ... and highly accomplished leaders.  You can see it all clearly in [this picture](https://www.owasp.org/index.php/OWASP_Board_History).
 
 In many ways, I felt that I immediately didn't belong.  I had run on the idea that OWASP could do a lot more to reach developers - which is so commonplace now as to seen silly - but at the time and in the OWASP community was a groundswell.  Yet I was just the founder of a tiny company focused on that.  Although I had spoken at several AppSec conferences, I saw myself as just a random person trying to build bridges.  I was still very new to OWASP and the security community in general.  I would note that all those folks on the board quickly accepted me and I like to think that over the years I have also done a thing or two to earn their respect.
 
