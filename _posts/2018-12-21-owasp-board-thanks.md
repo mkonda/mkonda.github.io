@@ -5,7 +5,9 @@ date:   2018-12-21
 categories: owasp
 ---
 
-I ran for the OWASP Board in 2014 and started serving in 2015.  At the time, I was blown away by the current sitting board which included:  Michael Coates (Twitter CSO), Tobias Gondrom (Huawei CSO), Fabio Cerullo, Andrew van der Stock, Jim Manico and others.  I mean, these were freaking legends and highly accomplished leaders.  You can see it all clearly in [this picture](https://www.owasp.org/index.php/OWASP_Board_History).
+I ran for the OWASP Global Board in 2014 and started serving in 2015.
+
+At that time, the current sitting board included:  Michael Coates (Twitter CSO), Tobias Gondrom (Huawei CSO), Fabio Cerullo, Andrew van der Stock, Jim Manico and others.  I mean, these were freaking legends ... household names in AppSec ... and highly accomplished leaders.  You can see it all clearly in [this picture](https://www.owasp.org/index.php/OWASP_Board_History).
 
 In many ways, I felt that I immediately didn't belong.  I had run on the idea that OWASP could do a lot more to reach developers - which is so commonplace now as to seen silly - but at the time and in the OWASP community was a groundswell.  Yet I was just the founder of a tiny company focused on that.  Although I had spoken at several AppSec conferences, I saw myself as just a random person trying to build bridges.  I was still very new to OWASP and the security community in general.  I would note that all those folks on the board quickly accepted me and I like to think that over the years I have also done a thing or two to earn their respect.
 
@@ -17,15 +19,15 @@ I want to start by calling out and acknowledging the role the staff plays.  In m
 
 That included the opportunity to work with a number of folks that deserve a lot more recognition than they typically get for their contributions to OWASP because they are paid staff and not volunteers or leaders.  People don't always realize how much work and community knowledge goes into running the OWASP Foundation.  They toil day in and day out to make the Foundation stronger while some folks in the community have very unrealistic expectations about what is possible from a small Foundation.  I can clearly say that the OWASP Staff have consistently put in levels of effort that reflect a deep investment in our community and we might do well to step back and note that.
 
-Specifically, I want to mention: 
+I also want to specifically mention: 
 * Kate Hartmann was the Operations Director.  She designed and managed a lot of the systems that supported the community.  Not the most outgoing person in the world, and allergic to attention, Kate basically kept the train on the tracks for several years until it got to be too much.
 * [Kelly Santalucia](https://www.owasp.org/index.php/User:Kelly_Santalucia_) helps with membership and corporate sponsorships.  She's a big part of how things actually work.  She is well liked by our sponsors and members, for good reason.  She's probably part of the reason I ran for the board in the first place.
 * [Alison Shrader](https://www.owasp.org/index.php/User:Alison_McNamee) helped with all sorts of accounting and finance tasks.  We miss her intimate knowledge of chapter and project budgets.
 * [Matt Tesauro](https://www.owasp.org/index.php/User:mtesauro) has helped with projects, with community and with deeper operational organization.  Matt sees OWASP from both the Staff and Community perspective and offers a rare perspective.
 
-I also very much appreciate Dawn Aitken, Harold Blankenship, Lisa Jones, Laura Grau, Tiffany Long and our Virtual support team that often held things together.
+I also very much appreciate Dawn Aitken, Harold Blankenship, Lisa Jones, Laura Grau, Tiffany Long and our Virtual support team that often held things together.  As a community, we have relied on all of these folks very heavily whether we realize it or not.
 
-No-one could have ever foreseen Paul Ritchie's [untimely demise](https://www.owasp.org/index.php/Tribute_to_Paul_Ritchie), which was tragic for OWASP and both in that moment and for years to come (maybe even ever since) presented us with indescribable challenges.
+No-one could have foreseen our Executive Director Paul Ritchie's [untimely demise](https://www.owasp.org/index.php/Tribute_to_Paul_Ritchie), which was tragic for OWASP (and undoubtedly even more so for his family).  In that moment and maybe ever since, this presented both the Board and the Foundation itself with innumerable challenges.
 
 I hope that everyone that takes the time to read this blog post about being on the OWASP Board will take a moment to appreciate all of these folks and maybe do something to make their lives easier!
 
@@ -37,11 +39,11 @@ It is important to understand that it is in large part because of its Open value
 
 I submit to you that the community is OWASP's biggest asset.  So many folks with good will that want to help make us great.  This is truly a precious resource.
 
-With full appreciate for all that it means, it has been an honor to serve OWASP's global community.
+With full appreciation for all that it means, it has been an honor to serve OWASP's global community.
 
 ## So What Did We Actually Do?
 
-It is interesting to think back to what my take was when the journey started and all the things that transpired since.  Consider the [board interview video](http://youtu.be/Ibze2gzv8Gs) and the [interview question responses](https://docs.google.com/a/owasp.org/spreadsheets/d/1zZvfuC_G5WzHF3TrgePFMj_r_r61ftvHIOKMplBMijQ/edit#gid=0) which I prepeared exhaustively for and arrived with charts and diagrams about OWASP finances.
+In reflecting on the time, I think it is interesting to think back to what my take was when the journey started and then contemplate all the things that have transpired since.  Consider the [board interview video](http://youtu.be/Ibze2gzv8Gs) which I prepared exhaustively for and arrived with charts and diagrams about OWASP finances.  To see what everyone was saying, you can look at the [interview question responses](https://docs.google.com/a/owasp.org/spreadsheets/d/1zZvfuC_G5WzHF3TrgePFMj_r_r61ftvHIOKMplBMijQ/edit#gid=0).
 
 I wanted to: 
 * Reach developers
@@ -51,7 +53,7 @@ I wanted to:
 * Build a more inclusive community
 
 Many of my initiatives failed.
-* It was my initial proposal that was accepted to overhaul the OWASP Website, but it was intended as a simple action to allocate funds to outsource a firm to build a website, not the empty requirements gathering exericse that it got hijacked into
+* It was my initial proposal that was accepted to overhaul the OWASP Website, but it was intended as a simple action to allocate funds to outsource a firm to build a website, not the empty requirements gathering exericse that it got hijacked into.
 * I proposed spending funds to bring in external help to make OWASP a more inclusive organization.  My proposal was not supported.
 * I proposed a project grant program to ready OWASP projects for sponsorship.
 * I proposed a services model for the overall OWASP budget.
