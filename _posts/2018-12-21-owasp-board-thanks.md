@@ -5,6 +5,8 @@ date:   2018-12-21
 categories: owasp
 ---
 
+![MK @ AppSec](/images/appsec2017_2.png){:height="206px" width="336px"}
+
 I ran for the OWASP Global Board in 2014 and started serving in 2015.  Board members are term limited to 4 years so my time on the board is coming to a close with the end of 2018.
 
 At the time I joined the board, the current sitting board members included:  Michael Coates (Twitter CSO), Tobias Gondrom (Huawei CSO), Fabio Cerullo, Andrew van der Stock, Jim Manico and others.  I mean, these were freaking legends ... household names in AppSec ... and highly accomplished leaders.  You can see it all clearly in [this picture](https://www.owasp.org/index.php/OWASP_Board_History).
