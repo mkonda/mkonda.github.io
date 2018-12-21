@@ -55,6 +55,10 @@ that can get you a pipeline.  Be sure that the pipeline of candidates isn't a wa
 though.  One thing we did that helped here was to ask explicitly where each firm was sourcing from.
 That way, we could use firms with different approaches.
 
+As an employer or an employee, anyone dealing with recruiters needs to make sure they understand
+the recruiter's incentive structures - at least in principle - and weigh that as they digest the 
+recruiter's recommendations.
+
 Ultimately, recruiting is a lot like sales.  You need to find the right people and convince them 
 that you are the right place for them.
 
