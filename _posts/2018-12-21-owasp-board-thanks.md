@@ -20,7 +20,7 @@ I want to start by calling out and acknowledging the role the staff plays.  In m
 That included the opportunity to work with a number of folks that deserve a lot more recognition than they typically get for their contributions to OWASP because they are paid staff and not volunteers or leaders.  People don't always realize how much work and community knowledge goes into running the OWASP Foundation.  They toil day in and day out to make the Foundation stronger while some folks in the community have very unrealistic expectations about what is possible from a small Foundation.  I can clearly say that the OWASP Staff have consistently put in levels of effort that reflect a deep investment in our community and we might do well to step back and note that.
 
 I also want to specifically mention: 
-* Kate Hartmann was the Operations Director.  She designed and managed a lot of the systems that supported the community.  Not the most outgoing person in the world, and allergic to attention, Kate basically kept the train on the tracks for several years until it got to be too much.
+* Kate Hartmann was the Operations Director.  She designed and managed a lot of the systems that supported the community.  Kate kept the train on the tracks for several years.
 * [Kelly Santalucia](https://www.owasp.org/index.php/User:Kelly_Santalucia_) helps with membership and corporate sponsorships.  She's a big part of how things actually work.  She is well liked by our sponsors and members, for good reason.  She's probably part of the reason I ran for the board in the first place.
 * [Alison Shrader](https://www.owasp.org/index.php/User:Alison_McNamee) helped with all sorts of accounting and finance tasks.  We miss her intimate knowledge of chapter and project budgets.
 * [Matt Tesauro](https://www.owasp.org/index.php/User:mtesauro) has helped with projects, with community and with deeper operational organization.  Matt sees OWASP from both the Staff and Community perspective and offers a rare perspective.
@@ -53,7 +53,7 @@ I wanted to:
 * Build a more inclusive community
 
 Many of my initiatives failed.
-* It was my initial proposal that was accepted to overhaul the OWASP Website, but it was intended as a simple action to allocate funds to outsource a firm to build a website, not the empty requirements gathering exericse that it got hijacked into.
+* It was my initial proposal that was accepted to overhaul the OWASP Website, but it was intended as a simple action to allocate funds to outsource a firm to build a website, not the empty requirements gathering exercise that it got hijacked into.
 * I proposed spending funds to bring in external help to make OWASP a more inclusive organization.  My proposal was not supported.
 * I proposed a project grant program to ready OWASP projects for sponsorship.
 * I proposed a services model for the overall OWASP budget.
@@ -62,7 +62,7 @@ In addition to the challenge with Paul (The ED that passed away), we had the con
 
 But that makes it seem more negative than it should.  I'm just trying to be realistic and tell the whole story.  
 
-Much of our success over the past few years was in managing to continue to execute on the day to day activities like budgeting, operating, events, taxes, etc. in the context of being understaffed and without an executive director.  We also had some very difficult board members.  If I had one thing to do differently, it would have been to replace Paul faster.
+Much of our success over the past few years was in managing to continue to execute on the day to day activities like budgeting, operating, events, taxes, etc. in the context of being understaffed and without an executive director.  We also had some very difficult board members.  If I had one thing to do differently, it would have been to find someone to take on the role that Paul's death left open faster.
 
 During those operational years, we held successful global conferences, sustained 250 chapters, brought better order to 100's of projects and held to our vendor neutral and non-commercial values.  We resisted going down the path of certifications several times.  From a community perspective, I believe we were able to sustain OWASP through some very challenging times to a point where it is thriving with more momentum than it has ever had before.
 
