@@ -127,16 +127,8 @@ I pointed to _standardizing_, _account management_ and _sales_ when I talked abo
 
 I started Jemurai 7 years ago.  That's the longest I've ever spent in any one company.  Its not a coincidence.
 
-I mentioned several times that I have been attacking this problem from a position of privilege and with many advantages.  I want to stop and say that even with those advantages, this journey has been hard.  It takes time, it takes guts, it takes sleepless nights, it takes decision making when there are no obvious (or even good) options.  That being said, I expect to continue to embrace the challenge.  I hope that we can also, through things like the _Accountability Groups_ and others help folks that don't necessarily have the advantages that I do to go after the things they dream of.
+I mentioned several times that I have been attacking this problem from a position of privilege and with many advantages.  I want to stop and say that even with those advantages, this journey has been hard.  It takes time, it takes guts, it takes sleepless nights, it takes decision making when there are no obvious (or even good) options.  That being said, I expect to continue to embrace the challenge.  I hope that we can also, through things like the _Accountability Groups_ and others, help folks that don't necessarily have the advantages that I do to go after the things they dream of.
 
 I've made tons of mistakes and experienced some success along the way.  I'm glad to say I wouldn't want
 it any other way.  I have a ton more to learn.  In fact, as with programming, the more I learn, the more I 
 know how much more I have to learn.
-
-I want to thank all present and past Jemurai for joining me on this adventure.  I hope you had some fun and learned some things too!  
-
-I also want to thank all of our customers and advocates.  We are fortunate to have many forward thinking security leaders among our active advisors and references - and that helps in ways that are hard to capture in a blog post.  We also just have good people as customers.
-
-So after all this reflection, I think its time to dig in and continue to find ways to change _Application Security_!
-
-Onward!
