@@ -5,7 +5,7 @@ date:   2018-12-21
 categories: owasp
 ---
 
-![MK @ AppSec](/images/appsec2017_2.png){:height="206px" width="336px"}
+![MK @ AppSec](/assets/images/appsec2017_2.png){:height="206px" width="336px"}
 
 I ran for the OWASP Global Board in 2014 and started serving in 2015.  Board members are term limited to 4 years so my time on the board is coming to a close with the end of 2018.
 

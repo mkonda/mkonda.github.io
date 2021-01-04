@@ -5,6 +5,8 @@ date:   2018-07-01
 categories: meta
 ---
 
+People often ask me what books I would recommend.  Here is a quick list.
+
 Here is a list of books I have particularly enjoyed.
 * [The Hard Thing About Hard Things](https://www.amazon.com/Hard-Thing-About-Things-Building/dp/0062273205/)
 * [Business Model Generation](https://www.amazon.com/Business-Model-Generation-Visionaries-Challengers/dp/0470876417/)

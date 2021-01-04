@@ -5,8 +5,6 @@ date:   2019-02-07
 categories: startups
 ---
 
-## Introduction
-
 In this post, I talk about the first _Accountability Group_ meeting.
 
 ## Finding People

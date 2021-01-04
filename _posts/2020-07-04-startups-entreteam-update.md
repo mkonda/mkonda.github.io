@@ -5,8 +5,6 @@ date:   2020-07-04
 categories: startups
 ---
 
-# Introduction
-
 This post talks about some recent updates around my businesses and a quick
 update around entreteam.
 

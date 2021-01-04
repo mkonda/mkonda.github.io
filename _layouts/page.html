@@ -1,17 +1,25 @@
 ---
 layout: default
 ---
-<article id="main">
-  <!--
-  <header>
-  <h2>{{ page.title }}</h2>
-  </header>
-  -->
-  
-  <section class="wrapper style8">
-    <div class="inner">
+<div class="content">
+  <section>
+    <div class="container {% if page.full_width %}max-container{% endif %}">
+      <h1 class="center-text">
+        {% if page.heading %}
+          {{ page.heading }}
+        {% elsif page.layout == 'archive' %}
+          {{ layout.title }}
+        {% elsif page.title %}
+          {{ page.title }}
+        {% endif %}
+      </h1>
+
+
+      {% if page.description %}
+        <p class="subtext">{{ page.description }}</p>
+      {% endif %}
+
       {{ content }}
     </div>
   </section>
-
-</article>
+</div>

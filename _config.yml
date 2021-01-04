@@ -12,41 +12,9 @@ social:
   twitter: https://twitter.com/mkonda
   github: https://github.com/mkonda
   linkedin-square: https://linkedin.com/in/matthewkonda
-  google-plus-square: https://plus.google.com/+MattKonda
-  email: mailto:mattkonda@gmail.com
-  #flickr:
-  #instagram:
-  #youtube-square:
-  #spotify:
-  #stack-overflow:
-  #vimeo:
-  #reddit:
-  #stubleupon:
-  #delicious:
-  #pied-piper:
-  #digg:
-  #soundcloud:
-  #deviantart:
-  #angellist:
-  #tumblr-square:
-  #stackexchange:
-  #weibo:
-  #trello:
-  #foursquare:
-  #linux:
-  #bitbucket-square:
-  #vk:
-  #slack:
-  #vine:
-  #weixin:
-  #yelp:
-  #skyatlas:
-  #leanpub:
-  #connectdevelop:
-  #ils:
-  #forumbee:
-  #tripadvisor:
-  #amazon:
+  email: mailto:matt.konda@hey.com
+  youtube-square:
+  leanpub: https://leanpub.com/u/mkonda
 
 # Build settings
 markdown: kramdown
@@ -55,3 +23,59 @@ future: true
 
 #sass:
 #  style: compressed
+
+
+# Values for the jekyll-seo-tag gem (https://github.com/jekyll/jekyll-seo-tag)
+logo: /assets/images/site-icons/katdl-square.png
+description: KAT Data Labs
+author:
+  name: Matt Konda
+  email: mattkonda@hey.com
+  twitter: https://twitter.com/mkonda
+social:
+  name: 
+  links:
+    - https://github.com/katdl/
+    - https://katdl.com/
+
+# -----
+# Build
+
+timezone: Etc/UTC
+paginate: 10
+paginate_path: "/blog/:num/"
+permalink: /:year/:month/:day/:slug/
+
+defaults:
+  -
+    scope:
+      path: ""
+      type: "posts"
+    values:
+      layout: "post"
+      _options:
+        content:
+          width: 1500
+          height: 2500
+  -
+    scope:
+      path: ""
+    values:
+      layout: "page"
+  -
+    scope:
+      path: "index.html"
+    values:
+      layout: "default"
+
+plugins:
+  - jekyll-sitemap
+  - jekyll-seo-tag
+  - jekyll-feed
+  - jekyll-paginate
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - LICENCE

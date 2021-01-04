@@ -5,8 +5,6 @@ date:   2019-01-18
 categories: startups
 ---
 
-## Introduction
-
 I have found it extremely helpful to seek out and cultivate working peer groups to encourage cross functional learning, accountability and more objective reflection on the course of a business.
 
 In this post, I lay out a bit of history and talk about how I see them working and what I'm doing now to build these in some new spaces.
