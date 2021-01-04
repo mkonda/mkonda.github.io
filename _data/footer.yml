@@ -1,0 +1,23 @@
+- links:
+  - name: Blog
+    link: /blog/
+  - name: About
+    link: /about/
+  - name: Contact
+    link: /contact/
+  - name: RSS
+    link: /feed.xml
+    new_window: false
+- links:
+  - name: GitHub
+    link: https://github.com/mkonda
+    social_icon: GitHub
+    new_window: true
+  - name: Twitter
+    link: https://twitter.com/mkonda
+    social_icon: Twitter
+    new_window: true
+  - name: LinkedIn
+    link: https://linkedin.com/in/mattkonda
+    social_icon: LinkedIn
+    new_window: true
