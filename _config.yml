@@ -26,17 +26,17 @@ future: true
 
 
 # Values for the jekyll-seo-tag gem (https://github.com/jekyll/jekyll-seo-tag)
-logo: /assets/images/site-icons/katdl-square.png
-description: KAT Data Labs
+logo: /assets/images/mk.png
+description: Matt Konda
 author:
   name: Matt Konda
-  email: mattkonda@hey.com
+  email: matt.konda@hey.com
   twitter: https://twitter.com/mkonda
 social:
   name: 
   links:
-    - https://github.com/katdl/
-    - https://katdl.com/
+    - https://github.com/mkonda/
+    - https://mattkonda.com/
 
 # -----
 # Build
