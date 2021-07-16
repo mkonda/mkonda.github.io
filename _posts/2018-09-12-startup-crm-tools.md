@@ -3,6 +3,7 @@ layout: post
 title:  "Startup CRM Tools"
 date:   2018-09-12
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 We have tried a fair number of CRM tools.  The TLDR; is that we settled on Contactually for keeping 

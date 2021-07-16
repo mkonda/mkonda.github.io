@@ -3,6 +3,7 @@ layout: post
 title:  "Startup Recruiting"
 date:   2018-08-15
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 We've made a lot of mistakes here.

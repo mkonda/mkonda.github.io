@@ -3,6 +3,7 @@ layout: post
 title:  "Proposals"
 date:   2018-08-01
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 If you are doing consulting, you will need to write proposals.  We write our proposals as Google Docs 
