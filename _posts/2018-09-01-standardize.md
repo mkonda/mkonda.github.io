@@ -3,6 +3,7 @@ layout: post
 title:  "Standardize"
 date:   2018-09-01
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 As a startup doing consulting, we met to talk to clients about almost anything.

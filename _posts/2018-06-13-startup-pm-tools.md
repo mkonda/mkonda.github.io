@@ -3,6 +3,7 @@ layout: post
 title:  "Startup Project Management Tools"
 date:   2018-06-13
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 I thought it might be worth writing some of my ideas about tools we either use or have used at Jemurai.  After starting, I realized that I should write separate posts for different types of tools as this quickly became a long read.  So here, I'll focus on different ways we have organized ourselves - meaning project management and tracking tools.

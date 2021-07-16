@@ -3,6 +3,7 @@ layout: post
 title:  "Great Reading"
 date:   2018-07-01
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 People often ask me what books I would recommend.  Here is a quick list.

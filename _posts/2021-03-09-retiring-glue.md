@@ -3,7 +3,10 @@ layout: post
 title:  "Retiring OWASP Glue"
 date:   2021-03-09
 categories: security
+featured_image: /images/mk_facepalm.jpg
 ---
+
+![OWASP Glue](/images/glue.png)
 
 In 2014 I started working on a tool I called Pipeline that later turned into OWASP Glue.  The TLDR; of this post is that I am stepping away and suggesting that the tool be retired or that new maintainers step in.
 

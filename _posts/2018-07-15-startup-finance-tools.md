@@ -3,6 +3,7 @@ layout: post
 title:  "Startup Finance"
 date:   2018-07-15
 categories: meta
+featured_image: /images/mk_facepalm.jpg
 ---
 
 For me, finance was one of the areas that initially intimidated me about starting my own business.

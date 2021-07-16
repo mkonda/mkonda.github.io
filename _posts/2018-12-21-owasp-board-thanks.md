@@ -2,10 +2,12 @@
 layout: post
 title:  "OWASP Board Thank You"
 date:   2018-12-21
+featured_image: '/images/mk_serious.png'
+excerpt: Thoughts about OWASP as I step down from the board.
 categories: owasp
 ---
 
-![MK @ AppSec](/assets/images/appsec2017_2.png){:height="206px" width="336px"}
+![MK @ AppSec](/images/appsec2017_2.png){:height="206px" width="336px"}
 
 I ran for the OWASP Global Board in 2014 and started serving in 2015.  Board members are term limited to 4 years so my time on the board is coming to a close with the end of 2018.
 
