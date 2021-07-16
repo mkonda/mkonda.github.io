@@ -3,7 +3,8 @@ layout: post
 title:  "Retiring OWASP Glue"
 date:   2021-03-09
 categories: security
-featured_image: /images/mk_facepalm.jpg
+featured_image: /images/glue.png
+excerpt: "A writeup and post mortem of the OWASP Glue project"
 ---
 
 ![OWASP Glue](/images/glue.png)

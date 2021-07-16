@@ -3,8 +3,13 @@ layout: post
 title:  "Emotions Coming out of Covid"
 date:   2021-03-14
 categories: personal
-featured_image: /images/mk_facepalm.jpg
+featured_image: /images/covid-july-2021.png
+excerpt: Dealing with covid is really hard.  On many levels.
 ---
+
+![Covid](/images/covid-july-2021.png)
+
+From:  [Financial Times Covid Tracker](https://www.ft.com/content/a2901ce8-5eb7-4633-b89c-cbdf5b386938)
 
 First things first for clarity:  I'm *not* saying Covid is over.  I still wear a mask whenever I go anywhere that is not my house.  I am being painfully careful about not exposing myself (or exposing others).  I will be watching actual data for the weeks and months ahead.  Texas still has hundreds of people dying every day and 50% (I think that's high) of the peak number of deaths for the last week (1117) and month (5831).  So, I'm going to continue to be super careful.
 

@@ -1,11 +1,11 @@
 ---
 title: 'July 2021 General Update'
 date: 2021-07-15 00:00:00
-featured_image: '/images/mk_skeptical.png'
+featured_image: '/images/fireworks.jpg'
 excerpt: A general update on various things going on as of July 2021.
 ---
 
-![](/images/mk_skeptical.png)
+![](/images/fireworks.jpg)
 
 ## Recent Reading
 
