@@ -24,3 +24,7 @@ I'm just a guy.  I try to do good things.  Sometimes they work.
 * Meditator
 * Protagonist (ENFJ)
 * Cobol -> Perl -> Java -> Ruby -> Clojure -> Golang -> Python
+* Kendo / Aikido / Judo
+* Japanese / Telugu / Spanish
+* Brown University
+* Rensselaer Polytechnic University (MS in CS)
