@@ -1,7 +1,7 @@
 basic_settings:
   site_title: Matt Konda
   site_tagline: Software meets security meets entrepreneur.
-  favicon_image: /images/favicon.png
+  favicon_image: /images/favicon.ico
 
 header_settings:
   logo_image: 
