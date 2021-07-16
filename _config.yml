@@ -1,7 +1,7 @@
 site: Matt Konda
 
 url: "https://mattkonda.com"
-baseurl: "https://mattkonda.com"
+#baseurl: ""
 
 
 collections:
