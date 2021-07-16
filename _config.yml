@@ -1,7 +1,8 @@
 site: Matt Konda
 
-url: https://mattkonda.com
-baseurl: https://mattkonda.com
+url: "https://mattkonda.com"
+baseurl: "https://mattkonda.com"
+
 
 collections:
   pages:
@@ -9,10 +10,10 @@ collections:
     permalink: /:name
   posts:
     output: true
-    permalink: /blog/:slug
+    permalink: "/blog/:slug"
   projects:
     output: true
-    permalink: /project/:slug
+    permalink: "/project/:slug"
 
 defaults:
   -
