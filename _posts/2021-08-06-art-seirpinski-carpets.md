@@ -30,7 +30,8 @@ that make those images *work* are not as basic as you might think.
 
 Anyway, this is just an intro post about one of the early efforts.  I
 started by looking at fractals, because different kinds of fractals
-are cool, right!  One simple one is a Sierpinski Carpet.
+are cool, right!  One simple one is a Sierpinski Carpet.  Which, BTW,
+is my LinkedIn image header background.
 
 ## Sierpinski Carpet
 
