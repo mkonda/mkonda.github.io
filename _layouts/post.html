@@ -2,23 +2,55 @@
 layout: default
 ---
 
-<section class="intro">
+{% include heading.html heading=page.title description=page.description align="center" date=page.date %}
 
-	<div class="wrap">
+{% if page.authors %}
+  <div class="flex flex-col pb-3 md:hidden">
+    {% for author in page.authors %}
+      {% include author-large.html
+        author=author
+      %}
+    {% endfor %}
+  </div>
+{% endif %}
 
-		<h1>{{ page.title }}</h1>
-		<p>{{ page.date | date_to_long_string }}</p>
+<div class="flex flex-col md:flex-row py-6 md:py-12">
 
-	</div>
+  <div class="w-full md:w-3/12 pr-3">
+    {% if page.authors %}
+      <div class="flex flex-col hidden md:flex mb-3 md:mb-6">
+        {% for author in page.authors %}
+          {% include author-large.html
+        author=author
+        %}
+        {% endfor %}
+      </div>
+    {% endif %}
 
-</section>
+    {% if page.categories %}
+      <div class="hidden md:block">
+        {% for category in page.categories %}
+          {% include category-badge.html %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
 
-<section class="single">
+  <div class="w-full md:w-9/12">
+    <div class="prose">
+      {{ content }}
+    </div>
+  </div>
 
-	<div class="wrap">
+</div>
 
-		{{ page.content }}
-
-	</div>
-
-</section>
+{% if page.categories %}
+  <div class="py-6 mt-6 border-t-2 block md:hidden">
+    <h3 class="text-sm font-medium mb-1">Categories</h3>
+    <div>
+      {% for category in page.categories %}
+        {% include category-badge.html %}
+      {% endfor %}
+    </div>
+  </div>
+{% endif %} 

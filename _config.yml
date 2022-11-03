@@ -1,58 +1,74 @@
-site: Matt Konda
-
-url: "https://mattkonda.com"
-#baseurl: ""
-
-
-collections:
-  pages:
-    output: true
-    permalink: /:name
-  posts:
-    output: true
-    permalink: "/blog/:slug"
-  projects:
-    output: true
-    permalink: "/project/:slug"
-
-defaults:
-  -
-    scope:
-      path: ""
-    values:
-      layout: "default"
-  -
-    scope:
-      path: ""
-      type: "pages"
-    values:
-      layout: "page"
-  -
-    scope:
-      path: ""
-      type: "posts"
-    values:
-      layout: "post"
-  -
-    scope:
-      path: ""
-      type: "projects"
-    values:
-      layout: "project"
-
+baseurl: "/"
+permalink: pretty
+title: "Matt Konda"
+collections_dir: collections
 markdown: kramdown
+highlighter: rouge
 
-kramdown:
-  input: GFM
-  syntax_highlighter: rouge
-  
 sass:
-  style: compressed
+  indentWidth: 4
+  style: compact
+  precision: 10
+
+google_analytics_id: false # replace with "UA-XXXX"
+
+logo:
+  logo_desktop_image: #assets/images/author/konda-mug-2022-small.png
+  logo_desktop_text: "Matt Konda"
+  logo_mobile_image: #assets/images/author/konda-mug-2022-small.png
+  logo_mobile_text: ""
+  logo_desktop_height: "56px"
+  logo_desktop_width: "56px"
+  logo_mobile_height: "36px"
+  logo_mobile_width: "36px"
+
+seo:
+  meta_twitter_site: "@mkonda"
+  meta_twitter_creator: "@mkonda"
+  meta_og_image: "https://www.mattkonda.com/jekyll-atlantic-screenshot.png"
 
 plugins:
+  - jekyll-environment-variables
+  - jekyll-postcss
   - jekyll-paginate
-  - jekyll-sitemap
 
-paginate: 6
-paginate_path: "/blog/page:num/"
-  
+paginate: 10
+paginate_path: /blog/page:num/
+
+collections:
+  posts:
+    output: true
+    permalink: /blog/:path/
+
+defaults:
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+  - scope:
+      path: "images"
+    values:
+      image: true
+  - scope:
+      path: "categories"
+    values:
+      layout: category
+      permalink: /category/:basename/
+
+exclude:
+  - Gemfile
+  - Gemfile.lock
+  - node_modules
+  - yarn.lock
+  - package.json
+  - package-lock.json
+  - vendor
+  - LICENSE.md
+  - LICENSE
+  - README.md
+  - .vscode
+  - .gitignore
+  - .liquidrc
+  - postcss.config.js
+  - tailwind.config.js

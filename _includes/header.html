@@ -1,40 +1,11 @@
-<header class="header">
-
-	<div class="header-image header-image--on" style="background-image: url({{ page.featured_image | relative_url }});"></div>
-	<div class="header-image"></div>
-
-	<div class="header-overlay"></div>
-
-	<div class="header__content">
-
-		{% if site.data.settings.header_settings.logo_image %}
-		<a href="{{ site.baseurl }}/" class="header__logo">
-			<img src="{{ site.data.settings.header_settings.logo_image | relative_url }}" class="header__logo__img">
-		</a>
-		{% else %}
-		<a href="{{ site.baseurl }}/" class="header__title">
-			{{ site.data.settings.basic_settings.site_title }}
-		</a>
-		{% endif %}
-
-		<p class="header__tagline">{{ site.data.settings.basic_settings.site_tagline }}</p>
-
-		<div class="menu">
-			<div class="menu__toggle js-menu-toggle">
-				<div class="menu__toggle__icon"><span></span></div>
-			</div>
-			<div class="menu__wrap">
-				<ul class="menu__list">
-					{% for item in site.data.settings.menu_settings.menu_items %}
-					<li class="menu__list__item">
-						<a href="{{ item.url | relative_url }}" class="menu__list__item__link">{{ item.title }}</a>
-					</li>
-					{% endfor %}
-				</ul>
-				{% include socials.html %}
-			</div>
-		</div>
-
-	</div>
-
+<header class="flex items-center justify-between py-6">
+  {% include logo.html %}
+  <div class="" id="menu-trigger">
+    <svg aria-hidden="true" class="text-black" data-icon="bars" data-prefix="fas" focusable="false" height="24"
+      role="img" viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+        fill="currentColor"></path>
+    </svg>
+  </div>
 </header>
