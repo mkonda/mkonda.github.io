@@ -4,6 +4,7 @@ date: 2021-08-06 00:00:00
 categories: ["Art","Programming"]
 thumbnail: /assets/images/color-sierpinski.jpg
 description: Making art with code has been a fun diversion
+authors: ["Matt Konda"]
 ---
 
 ![Sierpinski](/assets/images/color-sierpinski.jpg)

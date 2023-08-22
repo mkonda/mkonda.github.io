@@ -3,6 +3,7 @@ layout: post
 title:  "Startup Grind April 2019"
 date:   2019-04-23
 categories: Business
+authors: ["Matt Konda"]
 ---
 
 Lee Blaylock typically moderates Dallas [Startup Grind](https://www.startupgrind.com/) events and while we were preparing for [my fireside chat April 23](https://www.startupgrind.com/events/details/startup-grind-dallas-presents-fireside-chat-with-matt-konda-founder-of-jemurai/#/) he provided some ideas around questions he wanted to ask.  I thought answering a few of them in a blog post would make a fun and useful way to prepare.  I want to thank and acknolwedge Helena Krusec for doing the actual questionning and moderating.  Not to mention the other folks at the Capital Factory who helped with setting up, promoting and cleaning up.

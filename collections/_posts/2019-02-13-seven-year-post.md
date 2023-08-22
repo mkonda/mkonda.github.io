@@ -3,6 +3,7 @@ layout: post
 title:  "Seven Year Post"
 date:   2019-02-13
 categories: Business
+authors: ["Matt Konda"]
 ---
 
 I started Jemurai 7 years ago.   It seems fitting to write a reflective post about what has worked well, what has not worked so well and how it felt along the way.  I hope it is interesting.

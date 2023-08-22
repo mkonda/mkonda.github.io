@@ -4,6 +4,7 @@ title:  "Great Reading"
 date:   2018-07-01
 categories: ["Business", "Books"]
 description: Some great business books we recommend
+authors: ["Matt Konda"]
 ---
 
 People often ask me what books I would recommend.  Here is a quick list.

@@ -4,6 +4,7 @@ title:  "Startup CRM Tools"
 date:   2018-09-12
 categories: "Business"
 description: Discussion about the tools we are adopting for our startup.
+authors: ["Matt Konda"]
 ---
 
 We have tried a fair number of CRM tools.  The TLDR; is that we settled on Contactually for keeping 

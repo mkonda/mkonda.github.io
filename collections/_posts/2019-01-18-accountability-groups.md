@@ -4,6 +4,7 @@ title:  "Accountability Groups"
 date:   2019-01-18
 categories: ["Business", "Projects"]
 featured_image: /images/mk_facepalm.jpg
+authors: ["Matt Konda"]
 ---
 
 I have found it extremely helpful to seek out and cultivate working peer groups to encourage cross functional learning, accountability and more objective reflection on the course of a business.

@@ -4,6 +4,7 @@ title:  "Standardize"
 date:   2018-09-01
 categories: Business
 description: Standardizing offerings makes them scale.
+authors: ["Matt Konda"]
 ---
 
 As a startup doing consulting, we met to talk to clients about almost anything.

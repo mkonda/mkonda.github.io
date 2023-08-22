@@ -4,6 +4,7 @@ title:  "Proposals"
 date:   2018-08-01
 categories: Business
 description: Using Mimiran for proposals
+authors: ["Matt Konda"]
 ---
 
 If you are doing consulting, you will need to write proposals.  We write our proposals as Google Docs 

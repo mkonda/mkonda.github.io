@@ -4,6 +4,7 @@ title:  "Emotions Coming out of Covid"
 date:   2021-03-14
 categories: ["Personal"]
 description: Dealing with covid is really hard.  On many levels.
+authors: ["Matt Konda"]
 ---
 
 ![Covid](/assets/images/covid-july-2021.png)

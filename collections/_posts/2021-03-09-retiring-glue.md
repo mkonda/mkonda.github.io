@@ -4,6 +4,7 @@ title:  "Retiring OWASP Glue"
 date:   2021-03-09
 categories: Projects
 description: "A writeup and post mortem of the OWASP Glue project"
+authors: ["Matt Konda"]
 ---
 
 ![OWASP Glue](/assets/images/glue.png)

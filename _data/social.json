@@ -8,5 +8,20 @@
     "name": "Twitter",
     "link": "https://twitter.com/mkonda",
     "image": "https://simpleicons.org/icons/twitter.svg"
+  },
+  {
+    "name": "Mastadon: Infosec Exchange",
+    "link": "https://infosec.exchange/@mkonda",
+    "image": "https://simpleicons.org/icons/mastodon.svg"
+  },
+  {
+    "name": "LinkedIn",
+    "link": "https://www.linkedin.com/in/mattkonda/",
+    "image": "https://simpleicons.org/icons/linkedin.svg"
+  },
+  {
+    "name": "Reddit",
+    "link": "https://www.reddit.com/user/mkonda",
+    "image": "https://simpleicons.org/icons/reddit.svg"
   }
 ]

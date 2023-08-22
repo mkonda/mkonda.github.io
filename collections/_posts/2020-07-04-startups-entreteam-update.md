@@ -3,6 +3,7 @@ layout: post
 title:  "Startup Challenges and Entreteam Update"
 date:   2020-07-04
 categories: ["Business","Projects"]
+authors: ["Matt Konda"]
 ---
 
 This post talks about some recent updates around my businesses and a quick

@@ -4,17 +4,13 @@ title: "About Me"
 date: 2022-11-01
 permalink: "/about/"
 description: I'm just a guy.  I try to do good things.  Sometimes they work.
-image: "/assets/images/konda-mug-2022.png"
+image: "/assets/images/author/konda-mug-2022-small.png" 
 ---
-
-## About Me
-
-I'm just a guy.  I try to do good things.  Sometimes they work.
 
 * Founded Jemurai, SecurityProgram.io and katdl.com
 * Programmer / Hacker
 * Former OWASP Board Chair, Chapter Leader, Project Leader
-* Peloton addict (mkonda)
+* Runner / Soccer / Tennis / Peloton / Yoga
 * Social Justice
 * Feminist
 * LGBTQ+ Ally

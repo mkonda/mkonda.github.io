@@ -1,6 +1,11 @@
-<footer class="py-6 border-t-2">
-  <div class="container mx-auto">
-    <div class="flex mb-2">
+<footer class="py-6 border-t-2 center">
+  <div class="container mx-auto md:items-center items-center">
+    <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+    <a href="https://mattkonda.com"><img src="/assets/images/favicon.ico" /></a>
+    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2023 
+        <a href="https://mattkonda.com/" class="hover:underline">Matt Konda</a>. All Rights Reserved.
+    </span>
+    <div class="flex mb-2 items-center">
       {% for item in site.data.social %}
       <a class="py-2 mr-2" href="{{ item.link }}"><img width="24" height="24" src="{{ item.image }}" alt="{{ item.name }}" /></a>
       {% endfor %}

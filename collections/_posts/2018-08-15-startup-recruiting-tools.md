@@ -4,6 +4,7 @@ title:  "Startup Recruiting"
 date:   2018-08-15
 categories: Business
 description: How we recruit adn what we think about...
+authors: ["Matt Konda"]
 ---
 
 We've made a lot of mistakes here.

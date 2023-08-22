@@ -4,6 +4,7 @@ title:  "Startup Finance"
 date:   2018-07-15
 categories: Business
 description: The finance tools we use for our startup
+authors: ["Matt Konda"]
 ---
 
 For me, finance was one of the areas that initially intimidated me about starting my own business.

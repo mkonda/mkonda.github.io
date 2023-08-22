@@ -3,6 +3,7 @@ layout: post
 title:  "The First Accountability Group Meeting"
 date:   2019-02-07
 categories: ["Business","Projects"]
+authors: ["Matt Konda"]
 ---
 
 In this post, I talk about the first _Accountability Group_ meeting.

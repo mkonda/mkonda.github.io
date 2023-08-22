@@ -4,6 +4,7 @@ title:  "OWASP Board Thank You"
 date:   2018-12-21
 description: Thoughts about OWASP as I step down from the board.
 categories: Projects
+authors: ["Matt Konda"]
 ---
 
 ![MK @ AppSec](/images/appsec2017_2.png){:height="206px" width="336px"}
