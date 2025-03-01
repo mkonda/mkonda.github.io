@@ -4,20 +4,18 @@ title: "About Me"
 date: 2022-11-01
 permalink: "/about/"
 description: I'm just a guy.  I try to do good things.  Sometimes they work.
-image: "/assets/images/author/konda-mug-2022-small.png" 
+image: "/assets/images/author/konda-mug-2022-small.png"
 ---
 
+* Head of Security at IonQ, a quantum computing company
 * Founded Jemurai, SecurityProgram.io and katdl.com
 * Programmer / Hacker
 * Former OWASP Board Chair, Chapter Leader, Project Leader
 * Runner / Soccer / Tennis / Peloton / Yoga
-* Social Justice
-* Feminist
-* LGBTQ+ Ally
-* Anti-Racist
+* Social Justice, Feminist, LGBTQ+ Ally, Anti-Racist
 * Reader - Sci Fi, History, Nature, Business
 * Math and Science
-* Meditator
+* Meditator, Shodo, Haiku
 * Protagonist (ENFJ)
 * Cobol -> Perl -> Java -> Ruby -> Clojure -> Golang -> Python
 * Kendo / Aikido / Judo
