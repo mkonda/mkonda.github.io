@@ -5,9 +5,8 @@
     "image": "https://simpleicons.org/icons/github.svg"
   },
   {
-    "name": "Twitter",
-    "link": "https://twitter.com/mkonda",
-    "image": "https://simpleicons.org/icons/twitter.svg"
+    "name": "X",
+    "link": "https://x.com/mkonda"
   },
   {
     "name": "Mastadon: Infosec Exchange",
@@ -16,8 +15,7 @@
   },
   {
     "name": "LinkedIn",
-    "link": "https://www.linkedin.com/in/mattkonda/",
-    "image": "https://simpleicons.org/icons/linkedin.svg"
+    "link": "https://www.linkedin.com/in/mattkonda/"
   },
   {
     "name": "Reddit",
