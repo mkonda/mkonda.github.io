@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+
+    <title>
+  
+    Digital Art Sierpinski Carpets
+    -
+    Matt Konda
+  
+</title>
+
+
+  <meta name="description" content="Making art with code has been a fun diversion"/>
+
+
+<meta property="og:title" content="Digital Art Sierpinski Carpets"/>
+
+<meta content="website" property="og:type"/>
+<meta property="og:url" content="/blog/2021-08-06-art-seirpinski-carpets/"/>
+
+  <meta property="og:image" content="https://www.mattkonda.com/jekyll-atlantic-screenshot.png"/>
+
+<meta property="og:description" content="Making art with code has been a fun diversion"/>
+
+<meta content="summary" name="twitter:card"/>
+<meta name="twitter:site" content="@mkonda"/>
+
+<meta name="twitter:creator" content="@mkonda"/>
+
+
+    <link rel="icon" href="/favicon.ico">
+    <link href="/assets/css/style.css" rel="stylesheet">
+  </head>
+  <body class="page ">
+    <div id="menu-container"
+  class=" bg-blue-600 h-screen w-screen fixed z-50 p-8 flex-col items-center justify-around bg-gradient-to-b from-red-400 to-blue-500 opacity-90 overflow-hidden hidden">
+  <div id="menu-close" class="top-7 right-7 absolute">
+    <svg aria-hidden="true" focusable="false" class="h-6 text-white" role="img" xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 352 512">
+      <path fill="currentColor"
+        d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z">
+      </path>
+    </svg>
+  </div>
+  <div class="flex flex-col text-center text-white text-2xl font-bold">
+    
+    <a class="py-2" href="/">Home</a>
+    
+    <a class="py-2" href="/blog/">Blog</a>
+    
+    <a class="py-2" href="/categories/">Categories</a>
+    
+    <a class="py-2" href="/about/">About</a>
+    
+  </div>
+</div>
+    <div class="container mx-auto px-6 md:px-4">
+      <header class="flex items-center justify-between py-6">
+  <div class="logo hidden md:block">
+  <a class="flex items-center hover:opacity-70 transition duration-300 ease-in-out" href="/">
+    
+    
+    <h2 class="text-2xl font-sans font-semibold">Matt Konda</h2>
+    
+  </a>
+</div>
+<div class="logo-mobile block md:hidden">
+  <a class="flex items-center hover:opacity-70 transition duration-300 ease-in-out" href="/">
+    
+    
+    <h2 class="text-2xl font-sans font-semibold"></h2>
+    
+  </a>
+</div>
+  <div class="" id="menu-trigger">
+    <svg aria-hidden="true" class="text-black" data-icon="bars" data-prefix="fas" focusable="false" height="24"
+      role="img" viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+        fill="currentColor"></path>
+    </svg>
+  </div>
+</header>
+      
+
+
+
+
+<div class="py-6 md:py-12 lg:w-10/12 md:text-center mx-auto">
+  
+  <div class="font-medium text-gray-700">05 August 2021</div>
+  
+  <h1 class="heading text-4xl md:text-6xl font-bold font-sans md:leading-tight from-purple-400 to-blue-500">
+    Digital Art Sierpinski Carpets
+  </h1>
+  
+  <h2 class="text-xl text-gray-600 mt-2">Making art with code has been a fun diversion</h2>
+  
+</div>
+
+
+  <div class="flex flex-col pb-3 md:hidden">
+    
+      
+
+
+
+<div class="flex items-center mb-3 last:mb-0">
+  
+    <img height="48" width="48" class="rounded-full border-white border-2" src="/assets/images/author/konda-mug-2022-small.png" alt="Matt Konda"/>
+  
+  <div>
+    <span class="font-medium text-sm ml-1 block">Matt Konda</span>
+    <a class="text-sm ml-1 block text-green-400" href="https://www.twitter.com/@mkonda">@mkonda</a>
+  </div>
+</div>
+
+    
+  </div>
+
+
+<div class="flex flex-col md:flex-row py-6 md:py-12">
+
+  <div class="w-full md:w-3/12 pr-3">
+    
+      <div class="flex flex-col hidden md:flex mb-3 md:mb-6">
+        
+          
+
+
+
+<div class="flex items-center mb-3 last:mb-0">
+  
+    <img height="48" width="48" class="rounded-full border-white border-2" src="/assets/images/author/konda-mug-2022-small.png" alt="Matt Konda"/>
+  
+  <div>
+    <span class="font-medium text-sm ml-1 block">Matt Konda</span>
+    <a class="text-sm ml-1 block text-green-400" href="https://www.twitter.com/@mkonda">@mkonda</a>
+  </div>
+</div>
+
+        
+      </div>
+    
+
+    
+      <div class="hidden md:block">
+        
+          <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/art">Art</a>
+        
+          <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/programming">Programming</a>
+        
+      </div>
+    
+  </div>
+
+  <div class="w-full md:w-9/12">
+    <div class="prose">
+      <p><img src="/assets/images/color-sierpinski.jpg" alt="Sierpinski" /></p>
+
+<h2 id="digital-art">Digital Art</h2>
+
+<p>When the pandemic hit, I found myself with a lot of time and energy
+that I didn’t know what to do with.  One of the things I picked up
+was playing with different art in code.</p>
+
+<p>You might ask: “why would
+you want to spend more time in code or at a computer?”  The truth
+is that I spend so much time building the business, in meetings and
+writing code for things that are needed that I haven’t had much
+time to write code for fun lately.  So this turned out to be a
+satisfying fun adventure.</p>
+
+<p>I’m hoping this will be the start of a series of posts about different
+art I’ve worked on or played with.  One thing that is really interesting
+is that as you write code to create an image, you have to think a bit
+about what makes that art unique or different.  For instance, I wanted
+to write a script that would generate Mondrian style images and it
+turned out to be a lot harder than I thought because many of the things
+that make those images <em>work</em> are not as basic as you might think.</p>
+
+<p>Anyway, this is just an intro post about one of the early efforts.  I
+started by looking at fractals, because different kinds of fractals
+are cool, right!  One simple one is a Sierpinski Carpet.  Which, BTW,
+is my LinkedIn image header background.</p>
+
+<h2 id="sierpinski-carpet">Sierpinski Carpet</h2>
+
+<p>So a <a href="https://en.wikipedia.org/wiki/Sierpiński_carpet">Sierpinski Carpet</a>
+is a plane fractal built with squares.  If you look at the image above, it
+was made by starting with a black background and then removing squares in 
+a number of iterations.  Each iteration, each square is cut into 9 pieces
+(3x3) and the central square is removed.</p>
+
+<p>The diagram below (from <a href="https://en.wikipedia.org/wiki/Sierpiński_carpet">wikipedia</a>) 
+shows the progression through each iteration.</p>
+
+<p><img src="/assets/images/sierpinski-rounds.png" alt="Progression" /></p>
+
+<h2 id="code">Code</h2>
+
+<p>This is the code I used to create the carpet.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span> 
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span> 
+
+<span class="n">total</span> <span class="o">=</span> <span class="mi">8</span>
+<span class="n">size</span> <span class="o">=</span> <span class="mi">3</span><span class="o">**</span><span class="n">total</span> 
+<span class="n">square</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">empty</span><span class="p">([</span><span class="n">size</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="mi">3</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">uint8</span><span class="p">)</span> 
+<span class="n">color</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="mi">255</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">uint8</span><span class="p">)</span> 
+<span class="n">square</span><span class="p">.</span><span class="n">fill</span><span class="p">(</span><span class="mi">18</span><span class="p">)</span> 
+  
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">total</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span> 
+    <span class="n">stepdown</span> <span class="o">=</span> <span class="mi">3</span><span class="o">**</span><span class="p">(</span><span class="n">total</span> <span class="o">-</span> <span class="n">i</span><span class="p">)</span> 
+    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="o">**</span><span class="n">i</span><span class="p">):</span> 
+          
+        <span class="c1"># checking for the centremost square 
+</span>        <span class="k">if</span> <span class="n">x</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
+            <span class="k">for</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="o">**</span><span class="n">i</span><span class="p">):</span> 
+                <span class="k">if</span> <span class="n">y</span> <span class="o">%</span> <span class="mi">3</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span> 
+                    <span class="n">square</span><span class="p">[</span><span class="n">y</span> <span class="o">*</span> <span class="n">stepdown</span><span class="p">:(</span><span class="n">y</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">stepdown</span><span class="p">,</span> <span class="n">x</span> <span class="o">*</span> <span class="n">stepdown</span><span class="p">:(</span><span class="n">x</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">*</span><span class="n">stepdown</span><span class="p">]</span> <span class="o">=</span> <span class="n">color</span> 
+  
+<span class="n">save_file</span> <span class="o">=</span> <span class="s">"sierpinski.jpg"</span>
+<span class="n">Image</span><span class="p">.</span><span class="n">fromarray</span><span class="p">(</span><span class="n">square</span><span class="p">).</span><span class="n">save</span><span class="p">(</span><span class="n">save_file</span><span class="p">)</span> 
+<span class="n">i</span> <span class="o">=</span> <span class="n">Image</span><span class="p">.</span><span class="nb">open</span><span class="p">(</span><span class="s">"sierpinski.jpg"</span><span class="p">)</span> 
+<span class="n">i</span><span class="p">.</span><span class="n">show</span><span class="p">()</span> 
+</code></pre></div></div>
+
+
+    </div>
+  </div>
+
+</div>
+
+
+  <div class="py-6 mt-6 border-t-2 block md:hidden">
+    <h3 class="text-sm font-medium mb-1">Categories</h3>
+    <div>
+      
+        <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/art">Art</a>
+      
+        <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/programming">Programming</a>
+      
+    </div>
+  </div>
+ 
+      <footer class="py-6 border-t-2 center">
+  <div class="container mx-auto md:items-center items-center">
+    <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+    <a href="https://mattkonda.com"><img src="/assets/images/favicon.ico" /></a>
+    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2014-2025
+        <a href="https://mattkonda.com/" class="hover:underline">Matt Konda</a>. All Rights Reserved.
+    </span>
+    <div class="flex mb-2 items-center">
+      
+      <a class="py-2 mr-2" href="https://github.com/mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/github.svg" alt="Github" /></a>
+      
+      <a class="py-2 mr-2" href="https://x.com/mkonda"><img width="24" height="24" src="https://cdn.cms-twdigitalassets.com/content/dam/developer-twitter/images/Twitter_logo_blue_32.png" alt="X" /></a>
+      
+      <a class="py-2 mr-2" href="https://infosec.exchange/@mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/mastodon.svg" alt="Mastadon: Infosec Exchange" /></a>
+      
+      <a class="py-2 mr-2" href="https://www.linkedin.com/in/mattkonda/"><img width="24" height="24" src="https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg" alt="LinkedIn" /></a>
+      
+      <a class="py-2 mr-2" href="https://www.reddit.com/user/mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/reddit.svg" alt="Reddit" /></a>
+      
+    </div>
+</footer>
+
+    </div>
+    
+    
+    
+
+    <script type="text/javascript" src="/assets/js/hamburger.js"></script>
+  </body>
+</html>

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta content="ie=edge" http-equiv="x-ua-compatible">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+
+    <title>
+  
+    Retiring OWASP Glue
+    -
+    Matt Konda
+  
+</title>
+
+
+  <meta name="description" content="A writeup and post mortem of the OWASP Glue project"/>
+
+
+<meta property="og:title" content="Retiring OWASP Glue"/>
+
+<meta content="website" property="og:type"/>
+<meta property="og:url" content="/blog/2021-03-09-retiring-glue/"/>
+
+  <meta property="og:image" content="https://www.mattkonda.com/jekyll-atlantic-screenshot.png"/>
+
+<meta property="og:description" content="A writeup and post mortem of the OWASP Glue project"/>
+
+<meta content="summary" name="twitter:card"/>
+<meta name="twitter:site" content="@mkonda"/>
+
+<meta name="twitter:creator" content="@mkonda"/>
+
+
+    <link rel="icon" href="/favicon.ico">
+    <link href="/assets/css/style.css" rel="stylesheet">
+  </head>
+  <body class="page ">
+    <div id="menu-container"
+  class=" bg-blue-600 h-screen w-screen fixed z-50 p-8 flex-col items-center justify-around bg-gradient-to-b from-red-400 to-blue-500 opacity-90 overflow-hidden hidden">
+  <div id="menu-close" class="top-7 right-7 absolute">
+    <svg aria-hidden="true" focusable="false" class="h-6 text-white" role="img" xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 352 512">
+      <path fill="currentColor"
+        d="M242.72 256l100.07-100.07c12.28-12.28 12.28-32.19 0-44.48l-22.24-22.24c-12.28-12.28-32.19-12.28-44.48 0L176 189.28 75.93 89.21c-12.28-12.28-32.19-12.28-44.48 0L9.21 111.45c-12.28 12.28-12.28 32.19 0 44.48L109.28 256 9.21 356.07c-12.28 12.28-12.28 32.19 0 44.48l22.24 22.24c12.28 12.28 32.2 12.28 44.48 0L176 322.72l100.07 100.07c12.28 12.28 32.2 12.28 44.48 0l22.24-22.24c12.28-12.28 12.28-32.19 0-44.48L242.72 256z">
+      </path>
+    </svg>
+  </div>
+  <div class="flex flex-col text-center text-white text-2xl font-bold">
+    
+    <a class="py-2" href="/">Home</a>
+    
+    <a class="py-2" href="/blog/">Blog</a>
+    
+    <a class="py-2" href="/categories/">Categories</a>
+    
+    <a class="py-2" href="/about/">About</a>
+    
+  </div>
+</div>
+    <div class="container mx-auto px-6 md:px-4">
+      <header class="flex items-center justify-between py-6">
+  <div class="logo hidden md:block">
+  <a class="flex items-center hover:opacity-70 transition duration-300 ease-in-out" href="/">
+    
+    
+    <h2 class="text-2xl font-sans font-semibold">Matt Konda</h2>
+    
+  </a>
+</div>
+<div class="logo-mobile block md:hidden">
+  <a class="flex items-center hover:opacity-70 transition duration-300 ease-in-out" href="/">
+    
+    
+    <h2 class="text-2xl font-sans font-semibold"></h2>
+    
+  </a>
+</div>
+  <div class="" id="menu-trigger">
+    <svg aria-hidden="true" class="text-black" data-icon="bars" data-prefix="fas" focusable="false" height="24"
+      role="img" viewbox="0 0 448 512" xmlns="http://www.w3.org/2000/svg">
+      <path
+        d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z"
+        fill="currentColor"></path>
+    </svg>
+  </div>
+</header>
+      
+
+
+
+
+<div class="py-6 md:py-12 lg:w-10/12 md:text-center mx-auto">
+  
+  <div class="font-medium text-gray-700">09 March 2021</div>
+  
+  <h1 class="heading text-4xl md:text-6xl font-bold font-sans md:leading-tight from-purple-400 to-blue-500">
+    Retiring OWASP Glue
+  </h1>
+  
+  <h2 class="text-xl text-gray-600 mt-2">A writeup and post mortem of the OWASP Glue project</h2>
+  
+</div>
+
+
+  <div class="flex flex-col pb-3 md:hidden">
+    
+      
+
+
+
+<div class="flex items-center mb-3 last:mb-0">
+  
+    <img height="48" width="48" class="rounded-full border-white border-2" src="/assets/images/author/konda-mug-2022-small.png" alt="Matt Konda"/>
+  
+  <div>
+    <span class="font-medium text-sm ml-1 block">Matt Konda</span>
+    <a class="text-sm ml-1 block text-green-400" href="https://www.twitter.com/@mkonda">@mkonda</a>
+  </div>
+</div>
+
+    
+  </div>
+
+
+<div class="flex flex-col md:flex-row py-6 md:py-12">
+
+  <div class="w-full md:w-3/12 pr-3">
+    
+      <div class="flex flex-col hidden md:flex mb-3 md:mb-6">
+        
+          
+
+
+
+<div class="flex items-center mb-3 last:mb-0">
+  
+    <img height="48" width="48" class="rounded-full border-white border-2" src="/assets/images/author/konda-mug-2022-small.png" alt="Matt Konda"/>
+  
+  <div>
+    <span class="font-medium text-sm ml-1 block">Matt Konda</span>
+    <a class="text-sm ml-1 block text-green-400" href="https://www.twitter.com/@mkonda">@mkonda</a>
+  </div>
+</div>
+
+        
+      </div>
+    
+
+    
+      <div class="hidden md:block">
+        
+          <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/projects">Projects</a>
+        
+      </div>
+    
+  </div>
+
+  <div class="w-full md:w-9/12">
+    <div class="prose">
+      <p><img src="/assets/images/glue.png" alt="OWASP Glue" /></p>
+
+<p>In 2014 I started working on a tool I called Pipeline that later turned into OWASP Glue.  The TLDR; of this post is that I am stepping away and suggesting that the tool be retired or that new maintainers step in.</p>
+
+<p>The idea was to make it easier to build security tools into the development pipeline.  Back then, that was mostly Jenkins.  We took things like Brakeman, Bundler Audit, Bandit and others and made Glue run them and build out findings in a set format.  Later, we sent that output to Jira, GitHub, TeamCity, Pivotal.  The idea was Glue was the glue that tied those processes together.  It is actually funny to think about how Pipeline is so overloaded now.  At the time, it wasn’t such a common term.</p>
+
+<p>Actually, part of what we wanted to do was scan prebaked images like AMI’s.  People were using Packer to build tailored AMI’s and we thought Pipeline could run AV and FIM on those with Clam and Hashdeep.  It was only later and as we started to use it with clients on application security focused projects that we got deeper into the open source tooling for AppSec, extending to support nmap, ZAP and some commercial tools.</p>
+
+<p>Even then, it was somewhat overlapping with tools like Defect Dojo and commercial tools like ThreadFix.  We liked having the tool be open and theoretically easy to use.  In the early days, we had a lot of help from Alex, Brian and Rafa.  There was even a spin off and open source UI called CodeBurner that was built to apply Glue across a directory of a thousand applications.  I would also note that Glue drew heavily on Justin Collins’ Brakeman tool from the start and if you look closely enough you can see the obvious code sharing.</p>
+
+<p>An easy critique was that loaded up, our Docker image could have been measured in GB with the Java runtime, Python and Ruby just to support running the tools.  But it was easy and fun to write the integrations in Ruby.  At one point, we had commercial tooling like Contrast and Checkmarx integrations.</p>
+
+<p>In 2018, Omer Levi Hevroni offered to help with Glue.  He had fresh energy and new ideas about how to abstract the running tools.  In many ways, this felt like the ideal next step for the project.  Diversify the leadership team and work to bring new people and ideas into it.  He made significant improvements and brought new people and capabilities to the tool.</p>
+
+<p>Unfortunately, that also signaled the beginning of my reduced involvement and in the longer term it made it hard to come back and fix things.  Like any software project, working with it actively helps keep it fresh.  Since I wasn’t doing that it started to get harder to really contribute.  That become a frustration as folks came to me asking “why doesn’t Glue work with the new Dependency Check?” for instance.  I wanted to help, but I couldn’t really.  I didn’t know what changed in Dependency Check and heck - I’m not even working on a laptop with a JVM today.  It is a great lesson that writing something that works at a point in time is good but being able to maintain it and keep it working is another whole level of effort.</p>
+
+<p>Sitting here in 2021, and having discussed this with Omer, we have come to the conclusion that Glue may not be the best solution out there to build around.  Omer recommends Defect Dojo or commercial tooling.  I am using a more unix like philosophy these days and working on small tools that interoperate like unix command line tools (fkit, off and crush).  Glue was much more of a monolith if you look at it honestly.  When I want to run dependency check, I’m doing that in a GitHub action or BitBucket Pipeline and piping the output to fkit to do the work of reporting issues.  Many people built Jenkins plugins or GitHub actions for things like ZAP.  Glue is still an interesting project.  I’m glad I worked on it and there is a lot to learn from how it works and what worked and what didn’t.</p>
+
+<p>There is also a time and a place to let go and to say that the tool had its run.  Don’t we all always say “the easiest way to make sure an application isn’t vulnerable is to turn it off?”  Granted, Glue doesn’t probably sit in a place where it is introducing vulnerabilities - but it is natural for software to age and be retired.  This is me saying:  Glue has run its course.  Please find another actively maintained approach for doing application security in your pipelines.  Or perhaps others will step in to maintain and improve Glue.  In that case, thank you and good luck.</p>
+
+<p>Thanks for all of the support over the years.  Thanks to Alex, Brian, Rafa, Omer, Runako and others who contributed to the tool.  I had fun and it legitimately helped people.</p>
+
+
+    </div>
+  </div>
+
+</div>
+
+
+  <div class="py-6 mt-6 border-t-2 block md:hidden">
+    <h3 class="text-sm font-medium mb-1">Categories</h3>
+    <div>
+      
+        <a class="p-1 px-3 mr-1 mb-1 inline-block text-xs font-mono rounded bg-purple-300 text-blue-800 hover:bg-blue-200 hover:text-blue-800 transition duration-300 ease-in-out" href="/category/projects">Projects</a>
+      
+    </div>
+  </div>
+ 
+      <footer class="py-6 border-t-2 center">
+  <div class="container mx-auto md:items-center items-center">
+    <div class="w-full mx-auto max-w-screen-xl p-4 md:flex md:items-center md:justify-between">
+    <a href="https://mattkonda.com"><img src="/assets/images/favicon.ico" /></a>
+    <span class="text-sm text-gray-500 sm:text-center dark:text-gray-400">© 2014-2025
+        <a href="https://mattkonda.com/" class="hover:underline">Matt Konda</a>. All Rights Reserved.
+    </span>
+    <div class="flex mb-2 items-center">
+      
+      <a class="py-2 mr-2" href="https://github.com/mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/github.svg" alt="Github" /></a>
+      
+      <a class="py-2 mr-2" href="https://x.com/mkonda"><img width="24" height="24" src="https://cdn.cms-twdigitalassets.com/content/dam/developer-twitter/images/Twitter_logo_blue_32.png" alt="X" /></a>
+      
+      <a class="py-2 mr-2" href="https://infosec.exchange/@mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/mastodon.svg" alt="Mastadon: Infosec Exchange" /></a>
+      
+      <a class="py-2 mr-2" href="https://www.linkedin.com/in/mattkonda/"><img width="24" height="24" src="https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg" alt="LinkedIn" /></a>
+      
+      <a class="py-2 mr-2" href="https://www.reddit.com/user/mkonda"><img width="24" height="24" src="https://simpleicons.org/icons/reddit.svg" alt="Reddit" /></a>
+      
+    </div>
+</footer>
+
+    </div>
+    
+    
+    
+
+    <script type="text/javascript" src="/assets/js/hamburger.js"></script>
+  </body>
+</html>
