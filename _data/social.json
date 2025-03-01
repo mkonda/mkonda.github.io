@@ -6,7 +6,8 @@
   },
   {
     "name": "X",
-    "link": "https://x.com/mkonda"
+    "link": "https://x.com/mkonda",
+    "image": "https://cdn.cms-twdigitalassets.com/content/dam/developer-twitter/images/Twitter_logo_blue_32.png"
   },
   {
     "name": "Mastadon: Infosec Exchange",
@@ -15,7 +16,8 @@
   },
   {
     "name": "LinkedIn",
-    "link": "https://www.linkedin.com/in/mattkonda/"
+    "link": "https://www.linkedin.com/in/mattkonda/",
+    "image": "https://upload.wikimedia.org/wikipedia/commons/8/81/LinkedIn_icon.svg"
   },
   {
     "name": "Reddit",
