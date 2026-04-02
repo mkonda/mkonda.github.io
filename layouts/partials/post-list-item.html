@@ -1,0 +1,32 @@
+<article class="post on-list">
+  <div class="post-title-row">
+    <h2 class="post-title">
+      <a href="{{ .Permalink }}">{{ .Title | markdownify }}</a>
+      {{ if .Params.tags }}
+        <span class="post-tags-inline">
+          {{ range .Params.tags }}
+            #<a href="{{ (urlize (printf "tags/%s/" . )) | absLangURL }}">{{- . -}}</a>&nbsp;
+          {{ end }}
+        </span>
+      {{ end }}
+    </h2>
+    {{- if .Date -}}
+      <time class="post-date-right">
+        {{- partial "post-date" . -}}
+      </time>
+    {{- end -}}
+  </div>
+
+  {{ partial "cover.html" . }}
+
+  <div class="post-summary-row">
+    <div class="post-content">
+      {{ if .Description }}
+        <p>{{ .Description | markdownify }}</p>
+      {{ else }}
+        {{ .Summary }}
+      {{ end }}
+    </div>
+    <a class="read-more button inline" href="{{ .RelPermalink }}">[Read more]</a>
+  </div>
+</article>

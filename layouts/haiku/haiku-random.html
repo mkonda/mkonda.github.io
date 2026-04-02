@@ -1,0 +1,39 @@
+{{ define "main" }}
+  <article class="post">
+    <h1 class="post-title">random haiku</h1>
+    <div class="haiku-display">
+      <div class="haiku-poem" id="random-poem"></div>
+      <div class="haiku-title" id="random-title"></div>
+    </div>
+    <div style="text-align: center;">
+      <button class="haiku-btn" id="another-btn" onclick="pickRandom()">~ another ~</button>
+    </div>
+    <div style="text-align: center; margin-top: 1.5em;">
+      <a href="/haiku/" class="haiku-btn">all haiku</a>
+      <a href="/haiku/daily/" class="haiku-btn">today's haiku</a>
+    </div>
+  </article>
+
+  {{ partial "haiku-data.html" . }}
+  <script>
+  var _raw = JSON.parse(document.getElementById('haiku-data').textContent);
+  var haikuData = typeof _raw === 'string' ? JSON.parse(_raw) : _raw;
+  var lastIdx = -1;
+
+  function pickRandom() {
+    if (!haikuData.length) return;
+    var idx;
+    do {
+      idx = Math.floor(Math.random() * haikuData.length);
+    } while (idx === lastIdx && haikuData.length > 1);
+    lastIdx = idx;
+
+    var h = haikuData[idx];
+    var lines = h.content.trim().split('\n').filter(function(l) { return l.trim(); });
+    document.getElementById('random-poem').innerHTML = lines.join('<br>');
+    document.getElementById('random-title').textContent = '— ' + h.title;
+  }
+
+  pickRandom();
+  </script>
+{{ end }}

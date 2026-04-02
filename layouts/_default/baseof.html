@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="{{ $.Site.Language }}">
+<head>
+  {{ block "title" . }}
+    <title>{{ if .IsHome }}{{ $.Site.Title }}{{ else }}{{ .Title }} :: {{ $.Site.Title }}{{ end }}</title>
+  {{ end }}
+  {{ partial "head.html" . }}
+</head>
+<body>
+{{ $container := cond ($.Site.Params.FullWidthTheme | default false) "container full" (cond ($.Site.Params.CenterTheme | default false) "container center" "container") }}
+
+<div class="{{- $container -}}{{- cond ($.Site.Params.oneHeadingSize | default false) " headings--one-size" "" }}">
+
+  {{ partial "header.html" . }}
+
+  <div class="content">
+    {{ block "main" . }}
+    {{ end }}
+  </div>
+
+  {{ block "footer" . }}
+    {{ partial "footer.html" . }}
+  {{ end }}
+</div>
+
+{{ partial "haiku-data.html" . }}
+<script>
+(function() {
+  var raw = JSON.parse(document.getElementById('haiku-data').textContent);
+  var data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+  if (!data.length) return;
+
+  var seed = Math.floor(Date.now() / 300000);
+  var idx = seed % data.length;
+  var h = data[idx];
+
+  var lines = h.content.trim().split('\n').filter(function(l) { return l.trim(); });
+  var el = document.getElementById('header-haiku-text');
+  if (el && lines.length) {
+    el.innerHTML = lines.join('<br>');
+    document.getElementById('header-haiku').style.display = 'block';
+  }
+})();
+</script>
+
+</body>
+</html>

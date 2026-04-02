@@ -1,0 +1,178 @@
+<style>
+  /* Avatar in logo — bigger */
+  .logo-link {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    text-decoration: none;
+  }
+
+  .logo-avatar {
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    border: 2px solid var(--accent);
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Fix vertical lines height to match avatar */
+  .header__inner {
+    align-items: center;
+  }
+
+  .header__logo {
+    align-items: center;
+  }
+
+  .header__logo::after {
+    align-self: center;
+    height: 40px;
+  }
+
+  /* Haiku in header (right side) */
+  .header__haiku {
+    display: none;
+    flex: 0 0 auto;
+    padding: 6px 12px;
+    font-size: 0.72em;
+    line-height: 1.6;
+  }
+
+  .header__haiku-link {
+    text-decoration: none;
+    color: var(--accent);
+    font-style: italic;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+
+  .header__haiku-link:hover {
+    opacity: 1;
+  }
+
+  #header-haiku-text {
+    text-align: right;
+  }
+
+  /* Hide header haiku on small screens */
+  @media (max-width: 768px) {
+    .header__haiku {
+      display: none !important;
+    }
+  }
+
+  /* Haiku section styles */
+  .haiku-content p {
+    font-style: italic;
+    font-size: 1.3em;
+    line-height: 1.8;
+    text-align: center;
+    margin: 1.5em 0;
+  }
+
+  .haiku-entry {
+    border-bottom: 1px dashed var(--accent);
+    padding-bottom: 1.5em;
+    margin-bottom: 1.5em;
+  }
+
+  .haiku-entry .post-meta {
+    text-align: center;
+  }
+
+  /* Haiku of the day / random page */
+  .haiku-display {
+    text-align: center;
+    padding: 2em 0;
+  }
+
+  .haiku-display .haiku-poem {
+    font-style: italic;
+    font-size: 1.5em;
+    line-height: 2;
+    margin: 1.5em 0;
+    color: var(--accent);
+  }
+
+  .haiku-display .haiku-title {
+    font-size: 0.9em;
+    opacity: 0.7;
+    margin-top: 1em;
+  }
+
+  .haiku-btn {
+    display: inline-block;
+    margin-top: 1.5em;
+    padding: 0.5em 1.5em;
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    background: transparent;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 1em;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  .haiku-btn:hover {
+    background: var(--accent);
+    color: var(--background);
+  }
+
+  /* Post title row — title left, date right */
+  .post-title-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1em;
+  }
+
+  .post-title-row .post-title {
+    margin-bottom: 0;
+  }
+
+  .post-date-right {
+    flex-shrink: 0;
+    font-size: 0.85em;
+    opacity: 0.7;
+    white-space: nowrap;
+  }
+
+  /* Post summary row — description left, read more right */
+  .post-summary-row {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1em;
+  }
+
+  .post-summary-row .post-content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .post-summary-row .read-more {
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+
+  /* Inline tags next to post title */
+  .post-tags-inline {
+    font-size: 0.55em;
+    font-weight: normal;
+    opacity: 0.7;
+    margin-left: 0.5em;
+  }
+
+  .post-tags-inline a {
+    text-decoration: none;
+  }
+
+  .webring-section {
+    margin-top: 2em;
+  }
+
+  .project-links a {
+    color: var(--accent);
+  }
+</style>

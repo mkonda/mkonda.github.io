@@ -1,0 +1,34 @@
+{{ define "main" }}
+  <article class="post">
+    <h1 class="post-title">haiku of the day</h1>
+    <div class="haiku-display">
+      <div class="haiku-poem" id="daily-poem"></div>
+      <div class="haiku-title" id="daily-title"></div>
+      <p style="margin-top: 2em; font-size: 0.85em; opacity: 0.6;" id="daily-date"></p>
+    </div>
+    <div style="text-align: center; margin-top: 2em;">
+      <a href="/haiku/" class="haiku-btn">all haiku</a>
+      <a href="/haiku/random/" class="haiku-btn">random</a>
+    </div>
+  </article>
+
+  {{ partial "haiku-data.html" . }}
+  <script>
+  (function() {
+    var raw = JSON.parse(document.getElementById('haiku-data').textContent);
+    var data = typeof raw === 'string' ? JSON.parse(raw) : raw;
+    if (!data.length) return;
+
+    // Seed based on today's date so it changes daily
+    var today = new Date();
+    var seed = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
+    var idx = seed % data.length;
+    var h = data[idx];
+
+    var lines = h.content.trim().split('\n').filter(function(l) { return l.trim(); });
+    document.getElementById('daily-poem').innerHTML = lines.join('<br>');
+    document.getElementById('daily-title').textContent = '— ' + h.title;
+    document.getElementById('daily-date').textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  })();
+  </script>
+{{ end }}

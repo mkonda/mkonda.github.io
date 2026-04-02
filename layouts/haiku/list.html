@@ -1,0 +1,30 @@
+{{ define "main" }}
+  {{ with .Content }}
+    <div class="index-content">
+      {{ . }}
+    </div>
+  {{ end }}
+  <div class="posts">
+    {{ range .Pages.ByDate.Reverse }}
+      <article class="post on-list haiku-entry">
+        <div class="post-content haiku-content">
+          <p>{{ .RawContent | strings.TrimSpace | replaceRE "\n" "<br>" | safeHTML }}</p>
+        </div>
+        <div class="post-meta">
+          <time class="post-date">
+            {{- partial "post-date" . -}}
+          </time>
+          {{ if .Params.tags }}
+            <span class="post-tags">
+              {{ range .Params.tags }}
+              #<a href="{{ (urlize (printf "tags/%s/" . )) | absLangURL }}">
+                {{- . -}}
+              </a>&nbsp;
+              {{ end }}
+            </span>
+          {{ end }}
+        </div>
+      </article>
+    {{ end }}
+  </div>
+{{ end }}

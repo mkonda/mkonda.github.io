@@ -1,0 +1,10 @@
+{{/* Builds a JSON array of all haiku for use by JS — excludes special pages */}}
+{{ $haiku := slice }}
+{{ range (where .Site.RegularPages "Section" "haiku") }}
+  {{ if and .Date (not (in (slice "haiku-daily" "haiku-random") .Layout)) }}
+    {{ $haiku = $haiku | append (dict "title" .Title "content" .RawContent "url" .RelPermalink "date" (.Date.Format "2006-01-02")) }}
+  {{ end }}
+{{ end }}
+<script id="haiku-data" type="application/json">
+{{ $haiku | jsonify | safeHTML }}
+</script>

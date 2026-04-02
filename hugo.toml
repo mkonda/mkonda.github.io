@@ -1,0 +1,61 @@
+baseURL = "https://mattkonda.com/"
+languageCode = "en-us"
+theme = "terminal"
+pagination.pagerSize = 10
+
+[markup.goldmark.renderer]
+  unsafe = true
+
+[params]
+  contentTypeName = "posts"
+  showMenuItems = 6
+  fullWidthTheme = false
+  centerTheme = true
+  themeColor = "green"
+  showLastUpdated = false
+
+[languages]
+  [languages.en]
+    title = "Matt Konda"
+    subtitle = "security / code / haiku"
+    keywords = "security,quantum computing,haiku,owasp,programming"
+    copyright = "Matt Konda"
+    menuMore = "Show more"
+    readMore = "Read more"
+    readOtherPosts = "Read other posts"
+
+    [languages.en.params.logo]
+      logoText = "matt konda"
+      logoHomeLink = "/"
+
+    [languages.en.menu]
+      [[languages.en.menu.main]]
+        identifier = "posts"
+        name = "Blog"
+        url = "/posts"
+        weight = 1
+      [[languages.en.menu.main]]
+        identifier = "highlighted"
+        name = "Highlighted"
+        url = "/highlighted"
+        weight = 2
+      [[languages.en.menu.main]]
+        identifier = "haiku"
+        name = "Haiku"
+        url = "/haiku"
+        weight = 3
+      [[languages.en.menu.main]]
+        identifier = "projects"
+        name = "Projects"
+        url = "/projects"
+        weight = 4
+      [[languages.en.menu.main]]
+        identifier = "about"
+        name = "About"
+        url = "/about"
+        weight = 5
+      [[languages.en.menu.main]]
+        identifier = "webring"
+        name = "Webring"
+        url = "/webring"
+        weight = 6
