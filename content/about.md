@@ -1,6 +1,6 @@
 +++
 title = "About"
-date = "2022-11-01"
+date = "2026-04-22"
 +++
 
 ## who am i
