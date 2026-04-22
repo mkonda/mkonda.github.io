@@ -5,9 +5,9 @@ date = "2022-11-01"
 
 ## who am i
 
-* Was Head of Security at [IonQ](https://ionq.com/), a quantum computing company, from 2021-2025
-* Now doing anything helpful with security @ IonQ.
-* Founded [Jemurai](https://jemurai.com/), [SecurityProgram.io](https://securityprogram.io/),  [katdl.com](https://katdl.com/), and [Subversive Software](https://subversivesoftware.org/).
+* Was Head of Security at [IonQ](https://ionq.com/), a quantum computing company, from 2021-2026
+* Founded [Jemurai](https://jemurai.com/) and [SecurityProgram.io](https://securityprogram.io/)
+* Playing with [katdl.com](https://katdl.com/), and [Subversive Software](https://subversivesoftware.org/).
 * Programmer / Hacker
 * Former OWASP Board Chair, Chapter Leader, Project Leader
 * Runner / Soccer / Tennis / Peloton / Yoga
@@ -38,5 +38,4 @@ Japanese / Telugu / Spanish
 ## connect
 
 * [GitHub](https://github.com/mkonda)
-* [Mastodon](https://infosec.exchange/@mkonda)
 * [LinkedIn](https://www.linkedin.com/in/mattkonda/)
