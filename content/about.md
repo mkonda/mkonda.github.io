@@ -8,13 +8,14 @@ date = "2026-04-22"
 * Professionally ...
   * I'm seeking out my next thing!
   * I was Head of Security at [IonQ](https://ionq.com/), a quantum computing company (2021-2026)
-  * I founded [Jemurai](https://jemurai.com/) in 2012
-  * We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
-  * I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
+  * I founded [Jemurai](https://jemurai.com/) in 2012 and ran it for 12 years
+    * We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
+    * I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
+  * Before that I wrote a bunch of Perl and Java
 * Side projects include 
-  * A data, science and AI focused lab called [katdl.com](https://katdl.com/)
-  * I'm into [Subversive Software](https://subversivesoftware.org/)
-* Programmer and Hacker
+  * A data, science, medicine and AI focused lab called [katdl.com](https://katdl.com/)
+  * I'm into challenging dominant paradigms with [Subversive Software](https://subversivesoftware.org/)
+* Programmer Hacker
   * I am a former OWASP Board Chair, Chapter Leader, Project Leader
   * Various open source projects (OWASP Glue, OFF, Crush, S3S2)
 * Interests
