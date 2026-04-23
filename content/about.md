@@ -6,12 +6,11 @@ date = "2026-04-22"
 ## who am i
 
 * Professionally ...
-  * I'm seeking out my next thing!
+  * I'm seeking out my next main thing!
   * I was Head of Security at [IonQ](https://ionq.com/), a quantum computing company (2021-2026)
   * I founded [Jemurai](https://jemurai.com/) in 2012 and ran it for 12 years
     * We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
     * I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
-  * Before that I wrote a bunch of Perl and Java
 * Side projects include 
   * A data, science, medicine and AI focused lab called [katdl.com](https://katdl.com/)
   * I'm into challenging dominant paradigms with [Subversive Software](https://subversivesoftware.org/)
@@ -24,12 +23,12 @@ date = "2026-04-22"
   * Reading: Sci Fi, History, Nature, Business
   * Math and Science
   * Meditation, Shodo, Haiku
-  * Tinkering with edm ([djsegfault.com](https://djsegfault.com))
+  * Tinkering with EDM ([djsegfault.com](https://djsegfault.com))
   * I also like to play all sorts of music on bass, drums, guitar and piano
 
 ## languages
 
-`Cobol -> Perl -> Java -> Ruby -> Clojure -> Golang -> Python`
+`Perl -> Java -> Ruby -> Clojure -> Golang -> Python`
 
 ## martial arts
 
