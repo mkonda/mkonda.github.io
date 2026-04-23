@@ -5,22 +5,26 @@ date = "2026-04-22"
 
 ## who am i
 
-* Was Head of Security at [IonQ](https://ionq.com/), a quantum computing company (2021-2026)
-* I founded [Jemurai](https://jemurai.com/) in 2012
-* We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
-* I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
+* Professionally ...
+  * I'm seeking out my next thing!
+  * I was Head of Security at [IonQ](https://ionq.com/), a quantum computing company (2021-2026)
+  * I founded [Jemurai](https://jemurai.com/) in 2012
+  * We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
+  * I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
 * Side projects include 
-  * A data, science and AI lab called [katdl.com](https://katdl.com/)
-  * [Subversive Software](https://subversivesoftware.org/)
-  * Tinkering Musician ([djsegfault.com](https://djsegfault.com))
+  * A data, science and AI focused lab called [katdl.com](https://katdl.com/)
+  * I'm into [Subversive Software](https://subversivesoftware.org/)
 * Programmer and Hacker
   * I am a former OWASP Board Chair, Chapter Leader, Project Leader
+  * Various open source projects (OWASP Glue, OFF, Crush, S3S2)
 * Interests
-  * Active: Running, Soccer, Tennis, Peloton, Yoga
-  * Social Justice, Feminist, LGBTQ+ Ally, Anti-Racist
-  * Reader - Sci Fi, History, Nature, Business
+  * Responsibilities: Social Justice, Feminist, LGBTQ+ Ally, Anti-Racist, Climate, Education
+  * Staying Active: Running, Soccer, Tennis, Peloton, Yoga
+  * Reading: Sci Fi, History, Nature, Business
   * Math and Science
-  * Meditator, Shodo, Haiku
+  * Meditation, Shodo, Haiku
+  * Tinkering with edm ([djsegfault.com](https://djsegfault.com))
+  * I also like to play all sorts of music on bass, drums, guitar and piano
 
 ## languages
 
