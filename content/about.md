@@ -10,6 +10,7 @@ date = "2026-04-22"
   * I was Head of Security at [IonQ](https://ionq.com/), a quantum computing company (2021-2026)
   * I founded [Jemurai](https://jemurai.com/) in 2012 and ran it for 12 years
     * We built [SecurityProgram.io](https://securityprogram.io/), a SaaS security platform 2019->
+    * I wrote a book [Building an Agile Security Program](https://leanpub.com/buildingasecurityprogram)
     * I sold Jemurai & SPIO to [Crux Security](https:cruxsecurity.ai) in 2024
 * Side projects include 
   * A data, science, medicine and AI focused lab called [katdl.com](https://katdl.com/)

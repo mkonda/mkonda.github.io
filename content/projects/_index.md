@@ -8,9 +8,8 @@ Things I'm working on or have worked on.
 
 ## [IonQ](https://ionq.com/)
 
-From 2021 - 2025 I was the Head of Security at IonQ, a publicly traded quantum computing company 
-building the world's most powerful quantum computers. In 2026, I am exploring technical 
-nuances of quantum computing and experimenting to break things at a whole new level.
+From 2021 until recently I was the Head of Security at IonQ, a publicly traded quantum 
+computing company building the world's most powerful quantum computers.
 
 ---
 
@@ -38,6 +37,13 @@ acquired by [Crux](https://www.cruxsecurity.ai/) in 2024.
 
 ---
 
-## OWASP
+## [Book: Building an Agile Security Program](https://leanpub.com/buildingasecurityprogram))
+
+I wrote a book for tech CTO's or junior security folks to get a holistic view about
+approaching security in a startup environment.
+
+---
+
+## [OWASP](https://owasp.org)
 
 Former Board Chair, Chapter Leader, and Project Leader for the [Open Worldwide Application Security Project](https://owasp.org/). OWASP is a nonprofit foundation that works to improve the security of software through community-led open source projects, hundreds of local chapters worldwide, and educational conferences. I helped lead the organization through a period of growth and modernization.
