@@ -1,7 +1,7 @@
 +++
-title = "Jemurai Crux"
+title = "Jemurai Acquired by Crux"
 date = "2024-09-30"
-description = "Jemurai is merging with Crux"
+description = "Jemurai is merging with Crux to provide extended security services!"
 tags = ["business"]
 featured = true
 +++

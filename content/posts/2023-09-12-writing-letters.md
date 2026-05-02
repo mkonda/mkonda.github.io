@@ -1,7 +1,7 @@
 +++
 title = "Writing Letters"
 date = "2023-09-12"
-description = "I started writing letters again."
+description = "I started writing letters again. I find the format brings out different types of thinking and elicits a different emotional response."
 tags = ["personal"]
 +++
 
