@@ -2,7 +2,7 @@
 title = "Projects"
 +++
 
-Things I'm working on or have worked on.
+Things I'm working on or have worked on that seem worth highlighting.
 
 ---
 
@@ -11,10 +11,11 @@ Things I'm working on or have worked on.
 AI-Powered Solutions for Health Sciences. We partner with researchers, clinicians, and 
 health organizations to build intelligent systems that advance patient care.
 
-We've built a few systems:
+We've built a few systems worth highlighting:
 - Esophaguide - a scoring and visualization system for assisted diagnosis
 - An intelligent call schedule builder 
 - An Agent Team Framework for building tailored AI agents
+- A graph based data and visualization framework
 
 ---
 
@@ -30,7 +31,7 @@ Examples include:
 - Survey - a tool that makes it easy to see bluetooth, wifi and software defined radio
 - F0 - a Mac app for Flipper Zero
 - Flack - A browser extension that lays a trail of waste behind
-- Proxy
+- Proxy - An alternative way to see what your computer is talking to
 - Webring - An easy way to share information across sites.
 
 ---
