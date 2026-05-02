@@ -1,5 +1,5 @@
 +++
-title = "Scottish Rite"
+title = "Kudos to Scottish Rite"
 date = "2023-10-13"
 description = "Scottish Rite is much more than a great children's hospital."
 tags = ["personal"]
