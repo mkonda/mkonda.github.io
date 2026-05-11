@@ -6,8 +6,7 @@ tags = ["business"]
 featured = true
 +++
 
-I am excited to announce the release of my book, [Building An Agile Security Program]
-(https://leanpub.com/buildingasecurityprogram)! I started this book in 2019 and
+I am excited to announce the release of my book, [Building An Agile Security Program](https://leanpub.com/buildingasecurityprogram)! I started this book in 2019 and
 worked on it with the Jemurai team through 2020. I never quite got it over the
 finish line - until now.
 
