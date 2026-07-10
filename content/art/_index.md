@@ -4,7 +4,8 @@ title = "Art"
 
 Animated and interactive pieces built with code. Each is a single
 HTML file — Canvas 2D and vanilla JavaScript, zero dependencies.
-They explore emotions, self-perception, and inner experience.
+They explore emotions, self-perception, inner experience, and
+mathematical beauty.
 
 ---
 
@@ -78,3 +79,15 @@ values. The more you interact — the more you compare — the clearer
 a nearly invisible quote becomes at the bottom.
 
 <a href="/art/comparison.html" target="_blank">View fullscreen</a>
+
+---
+
+## [Fractals](/posts/fractals/)
+
+An interactive fractal explorer with five types (Mandelbrot, Julia,
+Burning Ship, Tricorn, Newton), six color palettes, and real-time
+parameter controls. Scroll to zoom, drag to pan. The Julia set's
+c-real and c-imag sliders let you morph the fractal continuously.
+Detail and color-shift knobs tighten or loosen the patterns.
+
+<a href="/art/fractals.html" target="_blank">View fullscreen</a>
