@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projecting</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050510}
+canvas{display:block;width:100%;height:100%;object-fit:contain}
+.ctrls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;opacity:.35;transition:opacity .3s}
+.ctrls:hover{opacity:.9}
+.ctrls button{background:rgba(255,255,255,.06);color:#778;border:1px solid rgba(255,255,255,.1);padding:5px 14px;cursor:pointer;font:12px/1.4 monospace;border-radius:3px}
+.ctrls button:hover{background:rgba(255,255,255,.14);color:#aab}
+</style>
+</head>
+<body>
+<div class="ctrls">
+  <button onclick="restart()">Restart</button>
+  <button onclick="togglePause()">Pause</button>
+</div>
+<canvas id="art" width="1200" height="800"></canvas>
+<script>
+(function () {
+'use strict';
+
+var canvas = document.getElementById('art');
+var ctx = canvas.getContext('2d');
+var W = 1200, H = 800, CX = 600, CY = 400;
+
+/* ── helpers ── */
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(t) { return t < 0 ? 0 : t > 1 ? 1 : t; }
+
+var ease = {
+  out3: function(t) { return 1 - Math.pow(1 - t, 3); },
+  in2:  function(t) { return t * t; },
+  in3:  function(t) { return t * t * t; },
+  inOut: function(t) { return t < .5 ? 2*t*t : -1 + (4 - 2*t)*t; },
+  out2: function(t) { return t * (2 - t); }
+};
+
+/* ── 3D ── */
+
+var SPHERE_R = 195, CAM_DIST = 520, FOV = 620;
+
+function rotY3(p, a) {
+  var c = Math.cos(a), s = Math.sin(a);
+  return [p[0]*c + p[2]*s, p[1], -p[0]*s + p[2]*c];
+}
+function rotX3(p, a) {
+  var c = Math.cos(a), s = Math.sin(a);
+  return [p[0], p[1]*c - p[2]*s, p[1]*s + p[2]*c];
+}
+function proj3(p) {
+  var z = p[2] + CAM_DIST;
+  if (z < 10) z = 10;
+  return [CX + p[0]*FOV/z, CY + p[1]*FOV/z, FOV/z];
+}
+
+/* ── window definitions (32 total) ── */
+
+var winDefs = [
+  { name: 'open',      emotion: 'Vulnerable' },
+  { name: 'veiled',    emotion: 'Guarded' },
+  { name: 'curtained', emotion: 'Hidden' },
+  { name: 'frosted',   emotion: 'Gentle' },
+  { name: 'tinted',    emotion: 'Melancholy' },
+  { name: 'barred',    emotion: 'Defended' },
+  { name: 'cracked',   emotion: 'Wounded' },
+  { name: 'rainy',     emotion: 'Tearful' },
+  { name: 'stained',   emotion: 'Sacred' },
+  { name: 'shuttered', emotion: 'Withdrawn' },
+  { name: 'smoky',     emotion: 'Obscured' },
+  { name: 'prismatic', emotion: 'Dazzling' },
+  { name: 'polished',  emotion: 'Performing' },
+  { name: 'painted',   emotion: 'Pretending' },
+  { name: 'mirrored',  emotion: 'Deflecting' },
+  { name: 'gilded',    emotion: 'Curated' },
+  { name: 'display',   emotion: 'Showcasing' },
+  { name: 'measured',  emotion: 'Controlled' },
+  { name: 'screened',  emotion: 'Filtered' },
+  { name: 'latticed',  emotion: 'Conforming' },
+  { name: 'narrow',    emotion: 'Restrained' },
+  { name: 'dusty',     emotion: 'Neglected' },
+  { name: 'warped',    emotion: 'Distorted' },
+  { name: 'doubled',   emotion: 'Divided' },
+  { name: 'boarded',   emotion: 'Abandoned' },
+  { name: 'armored',   emotion: 'Fortified' },
+  { name: 'bricked',   emotion: 'Sealed' },
+  { name: 'hollow',    emotion: 'Absent' },
+  { name: 'bright',    emotion: 'Exposed' },
+  { name: 'mosaic',    emotion: 'Fragmented' },
+  { name: 'overgrown', emotion: 'Reclaimed' },
+  { name: 'caged',     emotion: 'Trapped' }
+];
+
+/* ── sphere window positions (Fibonacci) ── */
+
+var sphereWins = [];
+var golden = Math.PI * (3 - Math.sqrt(5));
+for (var i = 0; i < winDefs.length; i++) {
+  var y = 1 - (2*i + 1) / winDefs.length;
+  var r = Math.sqrt(1 - y*y);
+  var phi = golden * i;
+  sphereWins.push({
+    pos: [r*Math.cos(phi)*SPHERE_R, y*SPHERE_R, r*Math.sin(phi)*SPHERE_R],
+    def: winDefs[i]
+  });
+}
+
+/* ── visit order ── */
+
+var visitOrder = [];
+function shuffleVisits() {
+  visitOrder = [];
+  for (var i = 0; i < winDefs.length; i++) visitOrder.push(i);
+  for (var i = visitOrder.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = visitOrder[i]; visitOrder[i] = visitOrder[j]; visitOrder[j] = t;
+  }
+}
+shuffleVisits();
+
+/* ── stars ── */
+
+var stars = [];
+for (var i = 0; i < 80; i++) {
+  stars.push({ x: Math.random()*W, y: Math.random()*H, r: .3+Math.random()*1.2,
+    ph: Math.random()*6.28, sp: .3+Math.random()*.7 });
+}
+function drawStars(time, alpha) {
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    var tw = .25 + Math.sin(time*s.sp + s.ph)*.15;
+    ctx.fillStyle = 'rgba(190,195,230,' + (tw*alpha) + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ── flame renderer ── */
+
+function drawFlame(cx, cy, size, time, opts) {
+  opts = opts || {};
+  var a = opts.alpha !== undefined ? opts.alpha : 1;
+  var hs = opts.hueShift || 0;
+
+  var g0 = ctx.createRadialGradient(cx, cy - size*.15, size*.05, cx, cy, size*2.2);
+  g0.addColorStop(0, 'rgba(255,200,80,' + (.16*a) + ')');
+  g0.addColorStop(.35, 'rgba(200,100,30,' + (.06*a) + ')');
+  g0.addColorStop(1, 'rgba(60,15,5,0)');
+  ctx.fillStyle = g0;
+  ctx.fillRect(cx - size*3, cy - size*3, size*6, size*6);
+
+  for (var i = 0; i < 7; i++) {
+    var ph = time*(2.2 + i*.35) + i*1.1;
+    var fl = Math.sin(ph)*.13 + Math.sin(ph*2.3+.7)*.06 + Math.sin(ph*4.1)*.03;
+    var h = size*(.82 - i*.04) * (1 + fl);
+    var w = size*(.19 - i*.012) * (1 + fl*.4);
+    var ox = Math.sin(ph*.6 + i*.8) * size*.02;
+    ctx.beginPath();
+    ctx.moveTo(cx+ox, cy-h);
+    ctx.bezierCurveTo(cx+ox+w*1.3, cy-h*.5, cx+ox+w*1.8, cy+size*.08, cx+ox, cy+size*.12);
+    ctx.bezierCurveTo(cx+ox-w*1.8, cy+size*.08, cx+ox-w*1.3, cy-h*.5, cx+ox, cy-h);
+    ctx.closePath();
+    var fa = (1 - i/7) * .5 * a;
+    var hue = 35 + i*6 + hs;
+    ctx.fillStyle = 'hsla(' + hue + ',' + Math.min(100,95-i*3) + '%,' + Math.min(90,75-i*6) + '%,' + fa + ')';
+    ctx.fill();
+  }
+
+  var g1 = ctx.createRadialGradient(cx, cy - size*.25, 0, cx, cy - size*.1, size*.18);
+  g1.addColorStop(0, 'rgba(255,255,245,' + (.85*a) + ')');
+  g1.addColorStop(.6, 'rgba(255,240,200,' + (.35*a) + ')');
+  g1.addColorStop(1, 'rgba(255,200,100,0)');
+  ctx.fillStyle = g1;
+  ctx.beginPath(); ctx.ellipse(cx, cy-size*.15, size*.11, size*.2, 0, 0, 6.28); ctx.fill();
+
+  for (var s = 0; s < 5; s++) {
+    var sp = (time*1.5 + s*1.4) % 3;
+    var sy = cy - size*.3 - sp*size*.35;
+    var sx = cx + Math.sin(time*2+s*3)*size*.08;
+    var sa = (1-sp/3)*.4*a;
+    if (sa > 0) {
+      ctx.fillStyle = 'rgba(255,220,100,' + sa + ')';
+      ctx.beginPath(); ctx.arc(sx, sy, 1.8, 0, 6.28); ctx.fill();
+    }
+  }
+}
+
+/* ── arch path ── */
+
+function archPath(cx, cy, w, h) {
+  var l = cx-w/2, r = cx+w/2, b = cy+h/2, ar = w/2;
+  ctx.beginPath();
+  ctx.moveTo(l, b);
+  ctx.lineTo(l, cy - h/2 + ar);
+  ctx.arc(cx, cy - h/2 + ar, ar, Math.PI, 0, false);
+  ctx.lineTo(r, b);
+  ctx.closePath();
+}
+
+/* ══════════════════════════════════════════════
+   WINDOW EFFECT RENDERERS — original 12 (strengthened)
+   ══════════════════════════════════════════════ */
+
+function renderOpen(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.32, time, { alpha: 1 });
+  var g = ctx.createRadialGradient(cx, cy+h*.08, 0, cx, cy, h*.7);
+  g.addColorStop(0, 'rgba(255,200,80,.1)');
+  g.addColorStop(.5, 'rgba(255,160,50,.04)');
+  g.addColorStop(1, 'rgba(255,200,80,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w, cy-h, w*2, h*2);
+}
+
+function renderVeiled(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .5 });
+  for (var i = 0; i < 6; i++) {
+    var sway = Math.sin(time*.6 + i*1.5) * w*.08;
+    var drift = Math.sin(time*.3 + i*2.3) * w*.03;
+    ctx.fillStyle = 'rgba(240,235,220,' + (.05 + i*.018) + ')';
+    ctx.fillRect(cx - w*.38 + sway + drift + i*w*.1, cy - h/2, w*.4, h);
+  }
+}
+
+function renderCurtained(cx, cy, w, h, time) {
+  var slitW = w*.03 + Math.sin(time*.4)*w*.008;
+  drawFlame(cx, cy + h*.1, h*.22, time, { alpha: .3 });
+  ctx.fillStyle = 'rgba(65,18,18,.95)';
+  ctx.fillRect(cx - w/2, cy - h/2, w/2 - slitW/2, h);
+  ctx.fillRect(cx + slitW/2, cy - h/2, w/2 - slitW/2, h);
+  ctx.strokeStyle = 'rgba(45,10,10,.4)';
+  ctx.lineWidth = 1.5;
+  for (var i = 0; i < 9; i++) {
+    var fx = cx - w/2 + i*w/9;
+    if (Math.abs(fx - cx) > slitW) {
+      ctx.beginPath();
+      ctx.moveTo(fx, cy-h/2);
+      ctx.bezierCurveTo(fx+4, cy-h/4, fx-4, cy+h/4, fx+2, cy+h/2);
+      ctx.stroke();
+    }
+  }
+  var gg = ctx.createLinearGradient(cx-slitW, cy-h/2, cx+slitW, cy-h/2);
+  gg.addColorStop(0, 'rgba(255,180,60,0)');
+  gg.addColorStop(.5, 'rgba(255,180,60,.06)');
+  gg.addColorStop(1, 'rgba(255,180,60,0)');
+  ctx.fillStyle = gg;
+  ctx.fillRect(cx-slitW*2, cy-h/2, slitW*4, h);
+}
+
+function renderFrosted(cx, cy, w, h, time) {
+  var g = ctx.createRadialGradient(cx, cy+h*.03, 0, cx, cy, h*.5);
+  g.addColorStop(0, 'rgba(255,220,150,.4)');
+  g.addColorStop(.25, 'rgba(255,190,110,.2)');
+  g.addColorStop(.6, 'rgba(200,150,80,.06)');
+  g.addColorStop(1, 'rgba(100,80,60,0)');
+  ctx.fillStyle = g;
+  archPath(cx, cy, w, h); ctx.fill();
+  ctx.fillStyle = 'rgba(200,210,230,.045)';
+  for (var i = 0; i < 140; i++) {
+    var fx = cx + Math.sin(i*137.5+.1)*.44*w;
+    var fy = cy + Math.cos(i*97.3+.2)*.44*h;
+    ctx.beginPath(); ctx.arc(fx, fy, 2+Math.sin(i*73)*2, 0, 6.28); ctx.fill();
+  }
+}
+
+function renderTinted(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .6, hueShift: 175 });
+  ctx.fillStyle = 'rgba(30,60,150,.28)';
+  archPath(cx, cy, w, h); ctx.fill();
+  ctx.fillStyle = 'rgba(20,40,120,.08)';
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+}
+
+function renderBarred(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.3, time, { alpha: .75 });
+  var nb = 5, bw = w*.055, sp = w/(nb+1);
+  for (var i = 1; i <= nb; i++) {
+    var bx = cx - w/2 + i*sp - bw/2;
+    ctx.fillStyle = 'rgba(50,50,55,.9)';
+    ctx.fillRect(bx, cy-h/2, bw, h);
+    ctx.fillStyle = 'rgba(70,68,65,.3)';
+    ctx.fillRect(bx+1, cy-h/2, bw*.3, h);
+  }
+  ctx.fillStyle = 'rgba(50,50,55,.9)';
+  ctx.fillRect(cx-w/2, cy-h*.03, w, h*.06);
+  ctx.fillRect(cx-w/2, cy+h*.2, w, h*.04);
+}
+
+function renderCracked(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .65 });
+  var ix = cx + w*.06, iy = cy - h*.06;
+  ctx.strokeStyle = 'rgba(200,215,240,.55)';
+  ctx.lineWidth = 1.4;
+  for (var i = 0; i < 12; i++) {
+    var a = i*6.28/12 + Math.sin(i*3)*.2;
+    var len = h*(.16 + Math.sin(i*5)*.07);
+    ctx.beginPath(); ctx.moveTo(ix, iy);
+    var x = ix, y = iy;
+    for (var j = 0; j < 5; j++) {
+      a += (Math.sin(i*7+j*3)-.5)*.35;
+      x += Math.cos(a)*len/5; y += Math.sin(a)*len/5;
+      ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+  }
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.arc(ix, iy, h*.06, 0, 6.28); ctx.stroke();
+  ctx.beginPath(); ctx.arc(ix, iy, h*.14, .2, 5.8); ctx.stroke();
+  ctx.beginPath(); ctx.arc(ix, iy, h*.24, .8, 4.5); ctx.stroke();
+  ctx.fillStyle = 'rgba(220,230,255,.04)';
+  for (var k = 0; k < 6; k++) {
+    var sa = k*1.1+.3, sr = h*(.08+k*.03);
+    ctx.beginPath();
+    ctx.moveTo(ix, iy);
+    ctx.lineTo(ix+Math.cos(sa)*sr, iy+Math.sin(sa)*sr);
+    ctx.lineTo(ix+Math.cos(sa+.4)*sr*.8, iy+Math.sin(sa+.4)*sr*.8);
+    ctx.closePath(); ctx.fill();
+  }
+}
+
+function renderRainy(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.26, time, { alpha: .4 });
+  ctx.strokeStyle = 'rgba(130,165,210,.16)';
+  ctx.lineWidth = 1.5;
+  for (var i = 0; i < 40; i++) {
+    var rx = cx - w*.44 + (i/40)*w*.88;
+    var ry = ((time*90 + i*31) % h) + cy - h/2;
+    var rLen = 8+Math.sin(i*5)*4;
+    ctx.beginPath();
+    ctx.moveTo(rx + Math.sin(time*.8+i)*2, ry);
+    ctx.lineTo(rx + Math.sin(time*.8+i)*2 + 1, ry + rLen);
+    ctx.stroke();
+  }
+  ctx.fillStyle = 'rgba(70,100,150,.07)';
+  for (var j = 0; j < 7; j++) {
+    var wy = cy - h*.35 + j*h*.12;
+    ctx.beginPath(); ctx.moveTo(cx-w/2, wy);
+    for (var k = 0; k <= 20; k++) {
+      ctx.lineTo(cx - w/2 + k*w/20, wy + Math.sin(time*2.5+k*.5+j*3)*4);
+    }
+    ctx.lineTo(cx+w/2, wy+7); ctx.lineTo(cx-w/2, wy+7); ctx.closePath(); ctx.fill();
+  }
+}
+
+var stainedSeeds = [];
+for (var si = 0; si < 12; si++) {
+  stainedSeeds.push({
+    x: Math.sin(si*137.5*Math.PI/180)*.38 + .5,
+    y: Math.cos(si*97.3*Math.PI/180)*.38 + .5,
+    hue: (si*37+15)%360, r: .13+Math.sin(si*73)*.04, sides: 5+si%3
+  });
+}
+
+function renderStained(cx, cy, w, h, time) {
+  var g = ctx.createRadialGradient(cx, cy+h*.08, 0, cx, cy, h*.48);
+  g.addColorStop(0, 'rgba(255,200,100,.3)');
+  g.addColorStop(1, 'rgba(100,50,20,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w, cy-h, w*2, h*2);
+  stainedSeeds.forEach(function(seg, i) {
+    var sx = cx - w/2 + seg.x*w, sy = cy - h/2 + seg.y*h;
+    var sr = seg.r * Math.min(w, h);
+    var fl = Math.sin(time*.8 + seg.hue)*.06;
+    ctx.beginPath();
+    for (var j = 0; j < seg.sides; j++) {
+      var a = j*6.28/seg.sides + i*.5;
+      var rr = sr*(.75 + Math.sin(a*2+i)*.25);
+      j === 0 ? ctx.moveTo(sx+Math.cos(a)*rr, sy+Math.sin(a)*rr)
+               : ctx.lineTo(sx+Math.cos(a)*rr, sy+Math.sin(a)*rr);
+    }
+    ctx.closePath();
+    ctx.fillStyle = 'hsla(' + seg.hue + ',55%,42%,' + (.26+fl) + ')';
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(20,18,12,.5)';
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  });
+}
+
+function renderShuttered(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .5 });
+  var ns = 9, sh = h*.068, gap = (h - ns*sh)/(ns+1);
+  for (var i = 0; i < ns; i++) {
+    var sy = cy - h/2 + gap + i*(sh+gap);
+    var woodL = 17 + Math.sin(i*2.7)*3;
+    ctx.fillStyle = 'hsl(28,28%,' + woodL + '%)';
+    ctx.fillRect(cx-w/2, sy, w, sh);
+    ctx.strokeStyle = 'rgba(0,0,0,.12)';
+    ctx.lineWidth = .5;
+    ctx.beginPath(); ctx.moveTo(cx-w/2, sy+sh*.3);
+    ctx.bezierCurveTo(cx-w*.15, sy+sh*.3+1, cx+w*.15, sy+sh*.3-1, cx+w/2, sy+sh*.3);
+    ctx.stroke();
+  }
+}
+
+function renderSmoky(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.24, time, { alpha: .25 });
+  for (var i = 0; i < 9; i++) {
+    var sx = cx + Math.sin(time*.3 + i*1.9)*w*.25;
+    var sy = cy - h*.06 + Math.cos(time*.25 + i*1.5)*h*.18;
+    var sr = h*(.1 + i*.028);
+    var g = ctx.createRadialGradient(sx, sy, 0, sx, sy, sr);
+    g.addColorStop(0, 'rgba(110,108,100,' + (.14-i*.008) + ')');
+    g.addColorStop(1, 'rgba(80,78,72,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(sx-sr, sy-sr, sr*2, sr*2);
+  }
+}
+
+function renderPrismatic(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.25, time, { alpha: .4 });
+  var colors = ['rgba(255,40,40,.1)','rgba(255,160,0,.1)','rgba(255,255,40,.1)',
+                'rgba(40,255,40,.1)','rgba(40,40,255,.1)','rgba(180,40,255,.1)'];
+  var bw = w / colors.length;
+  for (var i = 0; i < colors.length; i++) {
+    ctx.fillStyle = colors[i];
+    ctx.fillRect(cx - w/2 + i*bw + Math.sin(time*1.2+i*.8)*6, cy-h/2, bw*1.4, h);
+  }
+  for (var j = 0; j < 15; j++) {
+    var px = cx + Math.sin(j*4.3+time*.6)*w*.35;
+    var py = cy + Math.cos(j*3.7+time*.4)*h*.35;
+    var sp = (Math.sin(time*3.5+j*1.8)+1)*.5;
+    ctx.fillStyle = 'rgba(255,255,255,' + (sp*.15) + ')';
+    ctx.beginPath(); ctx.arc(px, py, 2.5, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ══════════════════════════════════════════════
+   WINDOW EFFECT RENDERERS — 20 new
+   ══════════════════════════════════════════════ */
+
+function renderPolished(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.3, time, { alpha: .8 });
+  var sheenX = cx - w*.25 + Math.sin(time*.25)*w*.2;
+  var g = ctx.createLinearGradient(sheenX-w*.08, cy-h/2, sheenX+w*.08, cy+h/2);
+  g.addColorStop(0, 'rgba(255,255,255,0)');
+  g.addColorStop(.35, 'rgba(255,255,255,.1)');
+  g.addColorStop(.5, 'rgba(255,255,255,.18)');
+  g.addColorStop(.65, 'rgba(255,255,255,.1)');
+  g.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  for (var i = 0; i < 4; i++) {
+    var hx = cx - w*.2 + i*w*.15 + Math.sin(time*.4+i)*8;
+    var hy = cy - h*.15 + Math.cos(time*.35+i*2)*15;
+    ctx.fillStyle = 'rgba(255,255,255,.07)';
+    ctx.beginPath(); ctx.arc(hx, hy, 7+Math.sin(time+i)*3, 0, 6.28); ctx.fill();
+  }
+}
+
+function renderPainted(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.2, time, { alpha: .06 });
+  var sky = ctx.createLinearGradient(cx, cy-h/2, cx, cy+h/2);
+  sky.addColorStop(0, 'rgba(55,75,135,.4)');
+  sky.addColorStop(.4, 'rgba(150,110,70,.3)');
+  sky.addColorStop(.6, 'rgba(120,90,55,.25)');
+  sky.addColorStop(1, 'rgba(35,75,45,.35)');
+  ctx.fillStyle = sky;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  ctx.fillStyle = 'rgba(255,220,100,.22)';
+  ctx.beginPath(); ctx.arc(cx+w*.12, cy-h*.2, 22, 0, 6.28); ctx.fill();
+  ctx.fillStyle = 'rgba(255,240,180,.08)';
+  ctx.beginPath(); ctx.arc(cx+w*.12, cy-h*.2, 40, 0, 6.28); ctx.fill();
+  ctx.fillStyle = 'rgba(28,55,30,.35)';
+  ctx.beginPath(); ctx.moveTo(cx-w/2, cy+h*.12);
+  for (var i = 0; i <= 12; i++) {
+    ctx.lineTo(cx-w/2+i*w/12, cy+h*.12-Math.sin(i*.6+.8)*h*.1-Math.sin(i*1.3)*h*.04);
+  }
+  ctx.lineTo(cx+w/2, cy+h/2); ctx.lineTo(cx-w/2, cy+h/2); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(22,45,25,.28)';
+  ctx.beginPath(); ctx.moveTo(cx-w/2, cy+h*.22);
+  for (var i = 0; i <= 10; i++) {
+    ctx.lineTo(cx-w/2+i*w/10, cy+h*.22-Math.sin(i*.8+2)*h*.06);
+  }
+  ctx.lineTo(cx+w/2, cy+h/2); ctx.lineTo(cx-w/2, cy+h/2); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,190,90,.1)';
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(cx-12, cy+h*.22); ctx.bezierCurveTo(cx-5, cy+h*.17, cx+8, cy+h*.2, cx+15, cy+h*.14);
+  ctx.stroke();
+}
+
+function renderMirrored(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.08, h*.18, time, { alpha: .12 });
+  drawFlame(cx+w*.16, cy-h*.1, h*.13, time, { alpha: .1 });
+  drawFlame(cx-w*.14, cy+h*.15, h*.1, time, { alpha: .08 });
+  drawFlame(cx+w*.06, cy+h*.25, h*.09, time, { alpha: .06 });
+  drawFlame(cx-w*.2, cy-h*.18, h*.07, time, { alpha: .05 });
+  var mg = ctx.createLinearGradient(cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+  mg.addColorStop(0, 'rgba(180,190,215,.1)');
+  mg.addColorStop(.3, 'rgba(195,200,220,.15)');
+  mg.addColorStop(.6, 'rgba(200,205,225,.12)');
+  mg.addColorStop(1, 'rgba(170,180,200,.08)');
+  ctx.fillStyle = mg;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+}
+
+function renderGilded(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.08, h*.24, time, { alpha: .6 });
+  ctx.strokeStyle = 'rgba(200,170,70,.35)';
+  ctx.lineWidth = 10;
+  archPath(cx, cy, w*.82, h*.86); ctx.stroke();
+  ctx.strokeStyle = 'rgba(180,150,50,.2)';
+  ctx.lineWidth = 2;
+  archPath(cx, cy, w*.72, h*.78); ctx.stroke();
+  var corners = [[-1,-.3],[1,-.3],[-1,.35],[1,.35]];
+  ctx.strokeStyle = 'rgba(190,160,55,.18)';
+  ctx.lineWidth = 1.2;
+  for (var i = 0; i < corners.length; i++) {
+    var dx = corners[i][0]*w*.3, dy = corners[i][1]*h*.3;
+    ctx.beginPath(); ctx.arc(cx+dx, cy+dy, 14, 0, 6.28); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx+dx, cy+dy, 7, 0, 6.28); ctx.stroke();
+    for (var p = 0; p < 4; p++) {
+      var pa = p*6.28/4+i;
+      ctx.beginPath(); ctx.moveTo(cx+dx+Math.cos(pa)*7, cy+dy+Math.sin(pa)*7);
+      ctx.lineTo(cx+dx+Math.cos(pa)*14, cy+dy+Math.sin(pa)*14); ctx.stroke();
+    }
+  }
+  for (var j = 0; j < 10; j++) {
+    var gx = cx + Math.sin(j*4.7+time*.25)*w*.38;
+    var gy = cy + Math.cos(j*3.2+time*.2)*h*.38;
+    var shimmer = (Math.sin(time*2+j*1.5)+1)*.5;
+    ctx.fillStyle = 'rgba(220,190,70,' + (shimmer*.09) + ')';
+    ctx.beginPath(); ctx.arc(gx, gy, 2.5, 0, 6.28); ctx.fill();
+  }
+}
+
+function renderDisplay(cx, cy, w, h, time) {
+  var spot = ctx.createRadialGradient(cx, cy-h*.2, 0, cx, cy+h*.05, h*.3);
+  spot.addColorStop(0, 'rgba(200,190,170,.14)');
+  spot.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = spot;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  ctx.fillStyle = 'rgba(38,33,28,.55)';
+  ctx.fillRect(cx-28, cy+h*.22, 56, h*.28);
+  ctx.fillStyle = 'rgba(48,43,38,.45)';
+  ctx.fillRect(cx-38, cy+h*.2, 76, 7);
+  ctx.fillRect(cx-32, cy+h*.49, 64, 5);
+  drawFlame(cx, cy+h*.06, h*.2, time, { alpha: .7 });
+  ctx.strokeStyle = 'rgba(120,35,35,.14)';
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(cx-w*.32, cy+h*.32);
+  ctx.bezierCurveTo(cx-w*.15, cy+h*.29, cx+w*.15, cy+h*.29, cx+w*.32, cy+h*.32);
+  ctx.stroke();
+  ctx.fillStyle = 'rgba(120,35,35,.12)';
+  ctx.beginPath(); ctx.arc(cx-w*.32, cy+h*.32, 3, 0, 6.28); ctx.fill();
+  ctx.beginPath(); ctx.arc(cx+w*.32, cy+h*.32, 3, 0, 6.28); ctx.fill();
+}
+
+function renderMeasured(cx, cy, w, h, time) {
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx-w/2, cy-h/2, w/2, h); ctx.clip();
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .75 });
+  ctx.restore();
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx, cy-h/2, w/2, h); ctx.clip();
+  var g = ctx.createRadialGradient(cx, cy+h*.05, 0, cx, cy, h*.42);
+  g.addColorStop(0, 'rgba(255,210,140,.22)');
+  g.addColorStop(.6, 'rgba(200,150,80,.08)');
+  g.addColorStop(1, 'rgba(100,80,60,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(100,90,70,.35)';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.moveTo(cx, cy-h/2); ctx.lineTo(cx, cy+h/2); ctx.stroke();
+  ctx.fillStyle = 'rgba(80,75,65,.15)';
+  ctx.font = '8px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('clear', cx-w*.25, cy+h*.44);
+  ctx.fillText('frosted', cx+w*.25, cy+h*.44);
+}
+
+function renderScreened(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.28, time, { alpha: .5 });
+  ctx.strokeStyle = 'rgba(75,75,80,.3)';
+  ctx.lineWidth = .8;
+  var gs = 11;
+  for (var gx = cx - w/2; gx <= cx + w/2; gx += gs) {
+    ctx.beginPath(); ctx.moveTo(gx, cy-h/2); ctx.lineTo(gx, cy+h/2); ctx.stroke();
+  }
+  for (var gy = cy - h/2; gy <= cy + h/2; gy += gs) {
+    ctx.beginPath(); ctx.moveTo(cx-w/2, gy); ctx.lineTo(cx+w/2, gy); ctx.stroke();
+  }
+}
+
+function renderLatticed(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.27, time, { alpha: .5 });
+  ctx.strokeStyle = 'rgba(65,60,50,.45)';
+  ctx.lineWidth = 2.5;
+  var ds = 26;
+  for (var d = -w-h; d <= w+h; d += ds) {
+    ctx.beginPath(); ctx.moveTo(cx-w/2+d, cy-h/2); ctx.lineTo(cx-w/2+d-h, cy+h/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx-w/2+d, cy-h/2); ctx.lineTo(cx-w/2+d+h, cy+h/2); ctx.stroke();
+  }
+}
+
+function renderNarrow(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.06, h*.22, time, { alpha: .35 });
+  var slitW = w*.055;
+  ctx.fillStyle = 'rgba(32,28,25,.95)';
+  ctx.fillRect(cx-w/2, cy-h/2, w/2-slitW/2, h);
+  ctx.fillRect(cx+slitW/2, cy-h/2, w/2-slitW/2, h);
+  for (var i = 0; i < 15; i++) {
+    var bx = cx - w*.42 + Math.sin(i*7.3+.5)*.35*w;
+    var by = cy - h*.42 + (i/15)*h*.84;
+    if (Math.abs(bx - cx) > slitW*.6) {
+      ctx.fillStyle = 'rgba(42,38,32,.3)';
+      ctx.fillRect(bx, by, 22+Math.sin(i*3)*10, 9+Math.sin(i*5)*3);
+      ctx.strokeStyle = 'rgba(55,50,42,.15)';
+      ctx.lineWidth = .5;
+      ctx.strokeRect(bx, by, 22+Math.sin(i*3)*10, 9+Math.sin(i*5)*3);
+    }
+  }
+}
+
+function renderDusty(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.24, time, { alpha: .15 });
+  ctx.fillStyle = 'rgba(85,68,42,.4)';
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  ctx.fillStyle = 'rgba(65,52,32,.18)';
+  for (var i = 0; i < 18; i++) {
+    var dx = cx - w*.38 + (i/18)*w*.76;
+    var dy = cy - h*.32 + Math.sin(i*3.1)*h*.25;
+    ctx.beginPath();
+    ctx.ellipse(dx, dy, 6+Math.sin(i*5)*4, 18+Math.sin(i*7)*10, Math.sin(i*2)*.4, 0, 6.28);
+    ctx.fill();
+  }
+  var smg = ctx.createRadialGradient(cx+w*.06, cy-h*.04, 0, cx+w*.06, cy-h*.04, 35);
+  smg.addColorStop(0, 'rgba(255,200,100,.06)');
+  smg.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = smg;
+  ctx.beginPath(); ctx.arc(cx+w*.06, cy-h*.04, 35, 0, 6.28); ctx.fill();
+}
+
+function renderWarped(cx, cy, w, h, time) {
+  for (var i = 0; i < 3; i++) {
+    var ox = Math.sin(time*.7 + i*2.1) * w*.06;
+    var oy = Math.cos(time*.55 + i*2.5) * h*.04;
+    drawFlame(cx+ox, cy+h*.1+oy, h*.22, time+i*.4, { alpha: .2 });
+  }
+  ctx.strokeStyle = 'rgba(160,170,190,.07)';
+  ctx.lineWidth = 1;
+  for (var j = 0; j < 8; j++) {
+    var ly = cy - h*.35 + j*h*.1;
+    ctx.beginPath();
+    for (var k = 0; k <= 18; k++) {
+      var lx = cx - w/2 + k*w/18;
+      var wave = Math.sin(time*1.5+k*.4+j*2)*6;
+      k === 0 ? ctx.moveTo(lx, ly+wave) : ctx.lineTo(lx, ly+wave);
+    }
+    ctx.stroke();
+  }
+}
+
+function renderDoubled(cx, cy, w, h, time) {
+  drawFlame(cx - w*.07, cy + h*.08, h*.24, time, { alpha: .42 });
+  drawFlame(cx + w*.07, cy + h*.13, h*.22, time, { alpha: .35 });
+  ctx.fillStyle = 'rgba(25,30,35,.3)';
+  ctx.fillRect(cx-w*.012, cy-h/2, w*.024, h);
+  ctx.fillStyle = 'rgba(75,110,75,.05)';
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+}
+
+function renderBoarded(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.24, time, { alpha: .18 });
+  var nb = 7, bh = h / nb;
+  for (var i = 0; i < nb; i++) {
+    var by = cy - h/2 + i*bh;
+    var tilt = Math.sin(i*2.3)*.6;
+    ctx.save();
+    ctx.translate(cx, by+bh/2);
+    ctx.rotate(tilt * Math.PI/180);
+    var woodH = 28 + Math.sin(i*4)*8;
+    var woodL = 17 + Math.sin(i*3)*3;
+    ctx.fillStyle = 'hsl(' + woodH + ',30%,' + woodL + '%)';
+    ctx.fillRect(-w*.55, -bh/2+2, w*1.1, bh-4);
+    ctx.strokeStyle = 'rgba(0,0,0,.14)';
+    ctx.lineWidth = .5;
+    for (var g = 0; g < 3; g++) {
+      var gy = -bh/2+5+g*(bh-10)/3;
+      ctx.beginPath(); ctx.moveTo(-w*.48, gy);
+      ctx.bezierCurveTo(-w*.15, gy+Math.sin(i+g)*2, w*.15, gy-Math.sin(i+g+1)*1.5, w*.48, gy);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+  ctx.fillStyle = 'rgba(85,80,75,.55)';
+  for (var n = 0; n < nb; n++) {
+    ctx.beginPath(); ctx.arc(cx-w*.36, cy-h/2+n*bh+bh/2, 3, 0, 6.28); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx+w*.36, cy-h/2+n*bh+bh/2, 3, 0, 6.28); ctx.fill();
+  }
+}
+
+function renderArmored(cx, cy, w, h, time) {
+  var mg = ctx.createLinearGradient(cx-w/2, cy-h/2, cx+w/2, cy+h/2);
+  mg.addColorStop(0, 'rgba(48,50,54,.93)');
+  mg.addColorStop(.5, 'rgba(58,60,66,.9)');
+  mg.addColorStop(1, 'rgba(42,44,48,.93)');
+  ctx.fillStyle = mg;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  var vw = w*.2, vh = h*.1;
+  ctx.fillStyle = '#0a0808';
+  ctx.fillRect(cx-vw/2, cy-vh/2, vw, vh);
+  ctx.save();
+  ctx.beginPath(); ctx.rect(cx-vw/2, cy-vh/2, vw, vh); ctx.clip();
+  drawFlame(cx, cy + vh*.4, vh*1.4, time, { alpha: .6 });
+  ctx.restore();
+  ctx.strokeStyle = 'rgba(78,80,86,.65)';
+  ctx.lineWidth = 3.5;
+  ctx.strokeRect(cx-vw/2, cy-vh/2, vw, vh);
+  ctx.fillStyle = 'rgba(88,90,96,.5)';
+  var rivets = [[-w*.38,-h*.38],[w*.38,-h*.38],[-w*.38,h*.38],[w*.38,h*.38],
+                [-w*.38,0],[w*.38,0],[0,-h*.38],[0,h*.38],
+                [-w*.2,-h*.2],[w*.2,-h*.2],[-w*.2,h*.2],[w*.2,h*.2]];
+  rivets.forEach(function(rp) {
+    ctx.beginPath(); ctx.arc(cx+rp[0], cy+rp[1], 3.5, 0, 6.28); ctx.fill();
+    ctx.strokeStyle = 'rgba(40,42,46,.4)';
+    ctx.lineWidth = .8;
+    ctx.stroke();
+  });
+}
+
+function renderBricked(cx, cy, w, h, time) {
+  drawFlame(cx, cy+h*.08, h*.15, time, { alpha: .025 });
+  var bw = 34, bh = 15, row = 0;
+  for (var by = cy-h/2; by < cy+h/2; by += bh+2) {
+    var offset = (row%2)*bw/2;
+    for (var bx = cx-w/2-bw; bx < cx+w/2+bw; bx += bw+2) {
+      var hueV = Math.sin(bx*.1+by*.1)*5;
+      var lightV = Math.sin(bx*.07+by*.13)*3;
+      ctx.fillStyle = 'hsl(' + (8+hueV) + ',42%,' + (21+lightV) + '%)';
+      ctx.fillRect(bx+offset, by, bw, bh);
+    }
+    row++;
+  }
+  ctx.strokeStyle = 'rgba(255,190,90,.012)';
+  ctx.lineWidth = 2;
+  for (var my = cy-h/2; my < cy+h/2; my += bh+2) {
+    ctx.beginPath(); ctx.moveTo(cx-w/2, my); ctx.lineTo(cx+w/2, my); ctx.stroke();
+  }
+}
+
+function renderHollow(cx, cy, w, h, time) {
+  ctx.fillStyle = 'rgba(25,22,18,.96)';
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  for (var i = 0; i < 25; i++) {
+    var sx = cx - w*.42 + Math.sin(i*137.5)*.38*w;
+    var sy = cy - h*.42 + Math.cos(i*97.3)*.38*h;
+    var sw = 22 + Math.sin(i*5)*10;
+    var sh = 12 + Math.sin(i*7)*5;
+    ctx.strokeStyle = 'rgba(48,42,35,.22)';
+    ctx.lineWidth = .7;
+    ctx.strokeRect(sx, sy, sw, sh);
+    ctx.fillStyle = 'rgba(35,30,25,.15)';
+    ctx.fillRect(sx, sy, sw, sh);
+  }
+  var g = ctx.createRadialGradient(cx, cy, 0, cx, cy, h*.15);
+  g.addColorStop(0, 'rgba(70,45,25,.025)');
+  g.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-h*.15, cy-h*.15, h*.3, h*.3);
+}
+
+function renderBright(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.06, h*.38, time, { alpha: 1 });
+  drawFlame(cx, cy + h*.08, h*.32, time+.5, { alpha: .45 });
+  drawFlame(cx+w*.03, cy + h*.1, h*.25, time+1.2, { alpha: .25 });
+  var g = ctx.createRadialGradient(cx, cy+h*.04, 0, cx, cy, h*.65);
+  g.addColorStop(0, 'rgba(255,240,200,.22)');
+  g.addColorStop(.3, 'rgba(255,200,100,.1)');
+  g.addColorStop(1, 'rgba(200,100,50,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w, cy-h, w*2, h*2);
+  ctx.fillStyle = 'rgba(255,255,240,.06)';
+  ctx.beginPath(); ctx.ellipse(cx+w*.08, cy-h*.12, 28, 7, .3, 0, 6.28); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,250,.04)';
+  ctx.beginPath(); ctx.ellipse(cx-w*.12, cy-h*.22, 18, 5, -.2, 0, 6.28); ctx.fill();
+}
+
+function renderMosaic(cx, cy, w, h, time) {
+  var g = ctx.createRadialGradient(cx, cy+h*.08, 0, cx, cy, h*.48);
+  g.addColorStop(0, 'rgba(255,200,100,.2)');
+  g.addColorStop(1, 'rgba(100,50,20,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-w/2, cy-h/2, w, h);
+  var ts = 13;
+  for (var tx = cx-w/2; tx < cx+w/2; tx += ts+1) {
+    for (var ty = cy-h/2; ty < cy+h/2; ty += ts+1) {
+      var dx = (tx+ts/2-cx)/(w/2);
+      var dy = (ty+ts/2-cy)/(h/2);
+      var dist = Math.sqrt(dx*dx+dy*dy);
+      var warmth = Math.max(0, 1-dist)*.28;
+      var tH = 30 + Math.sin(tx*.3+ty*.2)*15;
+      var tS = 28 + warmth*45;
+      var tL = 14 + warmth*32;
+      ctx.fillStyle = 'hsla(' + tH + ',' + tS + '%,' + tL + '%,' + (.28+warmth) + ')';
+      ctx.fillRect(tx, ty, ts, ts);
+    }
+  }
+}
+
+function renderOvergrown(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.26, time, { alpha: .32 });
+  ctx.lineWidth = 3.5;
+  for (var v = 0; v < 7; v++) {
+    var startX = cx - w*.45 + v*w*.15;
+    ctx.strokeStyle = 'rgba(28,60,22,' + (.45+Math.sin(v)*.1) + ')';
+    ctx.beginPath(); ctx.moveTo(startX, cy+h/2);
+    var vx = startX, vy = cy+h/2;
+    for (var s = 0; s < 9; s++) {
+      vx += Math.sin(s*1.1+v*1.8+time*.12)*w*.09;
+      vy -= h*.11;
+      ctx.lineTo(vx, vy);
+    }
+    ctx.stroke();
+    for (var l = 0; l < 5; l++) {
+      var lx = startX + Math.sin(l*2.3+v+time*.08)*w*.09;
+      var ly = cy+h/2 - l*h*.19 - h*.08;
+      var ls = 7+Math.sin(l*3+v*2)*3;
+      ctx.fillStyle = 'rgba(32,65,28,' + (.32+Math.sin(time*.4+l+v)*.06) + ')';
+      ctx.beginPath(); ctx.ellipse(lx, ly, ls, ls*.5, Math.sin(l+v)*.5, 0, 6.28); ctx.fill();
+      ctx.fillStyle = 'rgba(45,80,38,' + (.15+Math.sin(time*.3+l*2+v)*.04) + ')';
+      ctx.beginPath(); ctx.ellipse(lx+ls*.3, ly-ls*.2, ls*.6, ls*.35, Math.sin(l+v+1)*.4, 0, 6.28); ctx.fill();
+    }
+  }
+}
+
+function renderCaged(cx, cy, w, h, time) {
+  drawFlame(cx, cy + h*.1, h*.27, time, { alpha: .55 });
+  ctx.strokeStyle = 'rgba(95,95,100,.38)';
+  ctx.lineWidth = 1.4;
+  var ms = 16;
+  for (var mx = cx-w/2-ms*2; mx <= cx+w/2+ms*2; mx += ms) {
+    ctx.beginPath(); ctx.moveTo(mx, cy-h/2); ctx.lineTo(mx+h*.65, cy+h/2); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(mx, cy-h/2); ctx.lineTo(mx-h*.65, cy+h/2); ctx.stroke();
+  }
+  ctx.strokeStyle = 'rgba(100,100,108,.15)';
+  ctx.lineWidth = .5;
+  for (var mx = cx-w/2-ms*2; mx <= cx+w/2+ms*2; mx += ms) {
+    ctx.beginPath(); ctx.moveTo(mx+1, cy-h/2); ctx.lineTo(mx+h*.65+1, cy+h/2); ctx.stroke();
+  }
+}
+
+/* ── renderer array ── */
+
+var winRenderers = [
+  renderOpen, renderVeiled, renderCurtained, renderFrosted,
+  renderTinted, renderBarred, renderCracked, renderRainy,
+  renderStained, renderShuttered, renderSmoky, renderPrismatic,
+  renderPolished, renderPainted, renderMirrored, renderGilded,
+  renderDisplay, renderMeasured, renderScreened, renderLatticed,
+  renderNarrow, renderDusty, renderWarped, renderDoubled,
+  renderBoarded, renderArmored, renderBricked, renderHollow,
+  renderBright, renderMosaic, renderOvergrown, renderCaged
+];
+
+/* ── draw sphere ── */
+
+function drawSphere(rotAngle, time, targetIdx, hlP) {
+  var breathe = Math.sin(time*.4)*.015;
+  var r = SPHERE_R * (1 + breathe);
+
+  var g0 = ctx.createRadialGradient(CX, CY, r*.7, CX, CY, r*1.5);
+  g0.addColorStop(0, 'rgba(180,120,60,.03)');
+  g0.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g0;
+  ctx.fillRect(CX-r*1.5, CY-r*1.5, r*3, r*3);
+
+  var g1 = ctx.createRadialGradient(CX, CY, 0, CX, CY, r*.75);
+  g1.addColorStop(0, 'rgba(255,180,60,.12)');
+  g1.addColorStop(.5, 'rgba(200,100,30,.05)');
+  g1.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = g1;
+  ctx.beginPath(); ctx.arc(CX, CY, r, 0, 6.28); ctx.fill();
+
+  var g2 = ctx.createRadialGradient(CX-r*.3, CY-r*.3, r*.08, CX, CY, r);
+  g2.addColorStop(0, 'rgba(30,25,35,.48)');
+  g2.addColorStop(.7, 'rgba(15,12,18,.7)');
+  g2.addColorStop(1, 'rgba(10,8,12,.8)');
+  ctx.fillStyle = g2;
+  ctx.beginPath(); ctx.arc(CX, CY, r, 0, 6.28); ctx.fill();
+
+  ctx.save();
+  ctx.beginPath(); ctx.arc(CX, CY, r, 0, 6.28); ctx.clip();
+  ctx.strokeStyle = 'rgba(100,80,60,.04)';
+  ctx.lineWidth = .5;
+  for (var lat = -4; lat <= 4; lat++) {
+    var ly = (lat/5)*r, lr = Math.sqrt(Math.max(0, r*r - ly*ly));
+    ctx.beginPath(); ctx.ellipse(CX, CY+ly, lr, Math.max(1, lr*.12), 0, 0, 6.28); ctx.stroke();
+  }
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(160,130,90,.08)';
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(CX, CY, r, 0, 6.28); ctx.stroke();
+
+  var g3 = ctx.createRadialGradient(CX-r*.35, CY-r*.35, 0, CX-r*.35, CY-r*.35, r*.45);
+  g3.addColorStop(0, 'rgba(255,255,255,.04)');
+  g3.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = g3;
+  ctx.beginPath(); ctx.arc(CX, CY, r, 0, 6.28); ctx.fill();
+
+  var wobble = Math.sin(rotAngle*.3)*.12;
+  var projected = [];
+  for (var i = 0; i < sphereWins.length; i++) {
+    var rp = rotY3(sphereWins[i].pos, rotAngle);
+    rp = rotX3(rp, wobble);
+    var facing = (rp[2] + SPHERE_R) / (2*SPHERE_R);
+    if (facing > .12) {
+      var pp = proj3(rp);
+      projected.push({ x: pp[0], y: pp[1], s: pp[2], facing: facing, idx: i });
+    }
+  }
+  projected.sort(function(a, b) { return a.facing - b.facing; });
+
+  for (var j = 0; j < projected.length; j++) {
+    var wp = projected[j];
+    var ws = 16 * wp.s;
+    var al = wp.facing * wp.facing * .6;
+
+    var wg = ctx.createRadialGradient(wp.x, wp.y, 0, wp.x, wp.y, ws*2.2);
+    wg.addColorStop(0, 'rgba(255,200,80,' + (al*.25) + ')');
+    wg.addColorStop(1, 'rgba(255,150,50,0)');
+    ctx.fillStyle = wg;
+    ctx.fillRect(wp.x-ws*2.2, wp.y-ws*2.2, ws*4.4, ws*4.4);
+
+    var aw = ws*.85, ah = ws*1.25, ar2 = aw/2;
+    ctx.fillStyle = 'rgba(255,200,120,' + (al*.5) + ')';
+    ctx.beginPath();
+    ctx.moveTo(wp.x - aw/2, wp.y + ah/2);
+    ctx.lineTo(wp.x - aw/2, wp.y - ah/2 + ar2);
+    if (ar2 > .5) ctx.arc(wp.x, wp.y - ah/2 + ar2, ar2, Math.PI, 0, false);
+    ctx.lineTo(wp.x + aw/2, wp.y + ah/2);
+    ctx.closePath();
+    ctx.fill();
+
+    if (wp.idx === targetIdx && hlP > 0) {
+      ctx.strokeStyle = 'rgba(255,230,150,' + (hlP*al*.8) + ')';
+      ctx.lineWidth = 1.8;
+      ctx.stroke();
+      var tg = ctx.createRadialGradient(wp.x, wp.y, 0, wp.x, wp.y, ws*3.5);
+      tg.addColorStop(0, 'rgba(255,220,100,' + (hlP*.12) + ')');
+      tg.addColorStop(1, 'rgba(255,200,80,0)');
+      ctx.fillStyle = tg;
+      ctx.fillRect(wp.x-ws*3.5, wp.y-ws*3.5, ws*7, ws*7);
+    }
+  }
+}
+
+/* ── draw window view ── */
+
+function drawWindowView(winIdx, time, reveal) {
+  var def = winDefs[winIdx];
+  var renderer = winRenderers[winIdx];
+  var fw = 40, ww = 420, wh = 560;
+
+  ctx.fillStyle = '#161210';
+  archPath(CX, CY+16, ww+fw*2, wh+fw*2); ctx.fill();
+  ctx.strokeStyle = 'rgba(55,45,30,.3)';
+  ctx.lineWidth = 1;
+  archPath(CX, CY+16, ww+fw*2, wh+fw*2); ctx.stroke();
+  archPath(CX, CY+16, ww+fw, wh+fw); ctx.stroke();
+
+  ctx.save();
+  archPath(CX, CY+16, ww, wh); ctx.clip();
+  ctx.fillStyle = '#0a0808';
+  ctx.fillRect(CX-ww, CY-wh, ww*2, wh*2);
+  renderer(CX, CY+16, ww, wh, time);
+  ctx.restore();
+
+  ctx.strokeStyle = 'rgba(90,72,45,.2)';
+  ctx.lineWidth = 1.5;
+  archPath(CX, CY+16, ww, wh); ctx.stroke();
+
+  if (reveal > .3) {
+    var la = ease.out3(clamp((reveal-.3)/.4));
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(180,170,155,' + (la*.55) + ')';
+    ctx.font = '12px Georgia, serif';
+    ctx.fillText(def.emotion.toUpperCase().split('').join(' '), CX, CY + wh/2 + fw + 30);
+    ctx.fillStyle = 'rgba(130,125,115,' + (la*.3) + ')';
+    ctx.font = '9px Georgia, serif';
+    ctx.fillText(def.name, CX, CY - wh/2 - fw - 10);
+  }
+}
+
+/* ── animation ── */
+
+var t0 = null, paused = false, pauseT = 0, pauseStart = 0, raf = null;
+
+var INTRO = 5, ORBIT = 2, APPROACH = 1.5, VIEW = 5, RETREAT = 1.5;
+var CYCLE = ORBIT + APPROACH + VIEW + RETREAT;
+var NUM_VISITS = 4;
+var OUTRO = 3;
+var DUR = INTRO + CYCLE * NUM_VISITS + OUTRO;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  if (paused) { raf = requestAnimationFrame(tick); return; }
+
+  var elapsed = (ts - t0) / 1000 - pauseT;
+  var sec = elapsed % DUR;
+  var cycleNum = Math.floor(elapsed / DUR);
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, W, H);
+
+  var phase, p, currentVisit = 0;
+  if (sec < INTRO) {
+    phase = 'intro'; p = sec / INTRO;
+  } else {
+    var t = sec - INTRO;
+    if (t >= CYCLE * NUM_VISITS) {
+      phase = 'outro'; p = (t - CYCLE*NUM_VISITS) / OUTRO;
+    } else {
+      currentVisit = Math.floor(t / CYCLE);
+      var ct = t - currentVisit * CYCLE;
+      if (ct < ORBIT) { phase = 'orbit'; p = ct / ORBIT; }
+      else if (ct < ORBIT+APPROACH) { phase = 'approach'; p = (ct-ORBIT)/APPROACH; }
+      else if (ct < ORBIT+APPROACH+VIEW) { phase = 'view'; p = (ct-ORBIT-APPROACH)/VIEW; }
+      else { phase = 'retreat'; p = (ct-ORBIT-APPROACH-VIEW)/RETREAT; }
+    }
+  }
+
+  var visitIdx = (cycleNum * NUM_VISITS + currentVisit) % visitOrder.length;
+  var target = visitOrder[visitIdx];
+  var rotAngle = elapsed * .12;
+
+  if (phase === 'intro') {
+    ctx.globalAlpha = ease.out3(clamp(p*1.5));
+    drawStars(elapsed, .12*ease.out3(p));
+    drawSphere(rotAngle, elapsed, -1, 0);
+    ctx.globalAlpha = 1;
+    if (p > .3) {
+      drawFlame(CX, CY, 25, elapsed, { alpha: ease.out3((p-.3)/.7)*.15 });
+    }
+    if (p > .4) {
+      var ta = ease.out3((p-.4)/.6);
+      ctx.fillStyle = 'rgba(180,170,155,' + (ta*.45) + ')';
+      ctx.font = '28px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('P R O J E C T I N G', CX, 68);
+    }
+
+  } else if (phase === 'orbit') {
+    drawStars(elapsed, .12);
+    drawSphere(rotAngle, elapsed, target, ease.in2(p)*.5);
+    drawFlame(CX, CY, 25, elapsed, { alpha: .12 });
+    if (currentVisit === 0) {
+      var tf = 1 - ease.in2(clamp(p*2));
+      if (tf > 0) {
+        ctx.fillStyle = 'rgba(180,170,155,' + (tf*.45) + ')';
+        ctx.font = '28px Georgia, serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('P R O J E C T I N G', CX, 68);
+      }
+    }
+
+  } else if (phase === 'approach') {
+    var ap = ease.inOut(p);
+    ctx.globalAlpha = 1-ap;
+    drawStars(elapsed, .12);
+    drawSphere(rotAngle, elapsed, target, 1);
+    drawFlame(CX, CY, 25, elapsed, { alpha: .12 });
+    ctx.globalAlpha = 1;
+    if (ap > .15) {
+      var wp = ease.out3((ap-.15)/.85);
+      var sc = .4 + wp*.6;
+      ctx.save();
+      ctx.globalAlpha = wp;
+      ctx.translate(CX*(1-sc), CY*(1-sc));
+      ctx.scale(sc, sc);
+      drawWindowView(target, elapsed, wp);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+
+  } else if (phase === 'view') {
+    drawWindowView(target, elapsed, 1);
+
+  } else if (phase === 'retreat') {
+    var rp = ease.inOut(p);
+    if (rp < .85) {
+      var wp2 = 1 - rp/.85;
+      var sc2 = .5 + wp2*.5;
+      ctx.save();
+      ctx.globalAlpha = wp2;
+      ctx.translate(CX*(1-sc2), CY*(1-sc2));
+      ctx.scale(sc2, sc2);
+      drawWindowView(target, elapsed, wp2);
+      ctx.restore();
+      ctx.globalAlpha = 1;
+    }
+    if (rp > .2) {
+      var sp2 = ease.out2((rp-.2)/.8);
+      ctx.globalAlpha = sp2;
+      drawStars(elapsed, .12*sp2);
+      drawSphere(rotAngle, elapsed, -1, 0);
+      drawFlame(CX, CY, 25, elapsed, { alpha: .12*sp2 });
+      ctx.globalAlpha = 1;
+    }
+
+  } else if (phase === 'outro') {
+    var oa = 1 - ease.in3(clamp(p/.8));
+    ctx.globalAlpha = oa;
+    drawStars(elapsed, .12);
+    drawSphere(rotAngle, elapsed, -1, 0);
+    drawFlame(CX, CY, 25, elapsed, { alpha: .12 });
+    ctx.globalAlpha = 1;
+  }
+
+  var vg = ctx.createRadialGradient(CX, CY, Math.min(W,H)*.3, CX, CY, Math.max(W,H)*.7);
+  vg.addColorStop(0, 'rgba(0,0,5,0)');
+  vg.addColorStop(1, 'rgba(0,0,5,.35)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
+
+  raf = requestAnimationFrame(tick);
+}
+
+/* ── controls ── */
+
+window.restart = function () {
+  t0 = null; pauseT = 0; paused = false;
+  shuffleVisits();
+  if (raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+};
+
+window.togglePause = function () {
+  if (paused) { pauseT += (performance.now() - pauseStart) / 1000; paused = false; }
+  else { pauseStart = performance.now(); paused = true; }
+};
+
+raf = requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>

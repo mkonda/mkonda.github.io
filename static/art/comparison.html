@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comparison</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050510}
+canvas{display:block;width:100%;height:100%;object-fit:contain}
+.ctrls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;opacity:.35;transition:opacity .3s}
+.ctrls:hover{opacity:.9}
+.ctrls button{background:rgba(255,255,255,.06);color:#778;border:1px solid rgba(255,255,255,.1);padding:5px 14px;cursor:pointer;font:12px/1.4 monospace;border-radius:3px}
+.ctrls button:hover{background:rgba(255,255,255,.14);color:#aab}
+</style>
+</head>
+<body>
+<div class="ctrls">
+  <button onclick="restart()">Restart</button>
+  <button onclick="togglePause()">Pause</button>
+</div>
+<canvas id="art" width="1200" height="800"></canvas>
+<script>
+(function () {
+'use strict';
+
+var canvas = document.getElementById('art');
+var ctx = canvas.getContext('2d');
+var W = 1200, H = 800;
+
+/* ── helpers ── */
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(t) { return t < 0 ? 0 : t > 1 ? 1 : t; }
+
+var ease = {
+  out3: function(t) { return 1 - Math.pow(1 - t, 3); },
+  in2:  function(t) { return t * t; }
+};
+
+/* ── axes ── */
+
+var AXES = ['Success','Connection','Health','Purpose','Security','Joy'];
+var AXIS_H = [40, 340, 145, 215, 200, 48];
+var N = AXES.length;
+var ANG = function(i) { return -Math.PI/2 + i * Math.PI*2/N; };
+
+/* ── panel data ── */
+
+var struggling = [2, 1, 3, 1, 2, 1];
+var superstar  = [9, 8, 9, 10, 9, 10];
+var yourValues = [5, 5, 5, 5, 5, 5];
+var displayValues = [5, 5, 5, 5, 5, 5];
+
+/* ── layout ── */
+
+var panels = [
+  { cx: 195, formCY: 255, formR: 80, rcCY: 510, rcR: 68, label: 'someone struggling' },
+  { cx: 600, formCY: 235, formR: 100, rcCY: 520, rcR: 85, label: 'you' },
+  { cx: 1005, formCY: 255, formR: 80, rcCY: 510, rcR: 68, label: 'someone thriving' }
+];
+
+/* ── interaction state ── */
+
+var dragging = -1;
+var hoverAxis = -1;
+var quoteReveal = 0;
+
+/* ── stars ── */
+
+var stars = [];
+for (var i = 0; i < 50; i++) {
+  stars.push({ x: Math.random()*W, y: Math.random()*H, r: .3+Math.random()*.7,
+    ph: Math.random()*6.28, sp: .3+Math.random()*.4 });
+}
+function drawStars(time) {
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    ctx.fillStyle = 'rgba(190,195,230,' + ((.12+Math.sin(time*s.sp+s.ph)*.06)) + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ── abstract form ── */
+
+function drawForm(cx, cy, values, radius, time) {
+  var avg = 0;
+  for (var i = 0; i < N; i++) avg += values[i];
+  avg /= N;
+
+  var glowR = radius * (.4 + avg/10 * .7);
+  var g0 = ctx.createRadialGradient(cx, cy, 0, cx, cy, glowR);
+  g0.addColorStop(0, 'rgba(255,220,140,' + (.03+avg/10*.08) + ')');
+  g0.addColorStop(1, 'rgba(200,160,80,0)');
+  ctx.fillStyle = g0;
+  ctx.fillRect(cx-glowR, cy-glowR, glowR*2, glowR*2);
+
+  var rd = [];
+  for (var i = 0; i < N; i++) {
+    var rotA = time*(.12+i*.06) + i*Math.PI/3;
+    var tiltA = Math.PI/3 + Math.sin(time*.15+i*1.1)*.35;
+    rd.push({ i: i, z: Math.sin(rotA)*Math.sin(tiltA), rotA: rotA, tiltA: tiltA });
+  }
+  rd.sort(function(a,b) { return a.z - b.z; });
+
+  for (var ri = 0; ri < rd.length; ri++) {
+    var d = rd[ri], i = d.i, val = values[i];
+    var rr = radius*(.25 + Math.max(val,.8)/10*.75);
+    var ecc = Math.abs(Math.cos(d.tiltA));
+    var ry = rr * Math.max(.06, ecc);
+    var depth = (d.z+1)/2;
+    var alpha = (.06 + val/10*.22)*(.3+.7*depth);
+    ctx.strokeStyle = 'hsla('+AXIS_H[i]+',55%,60%,'+alpha+')';
+    ctx.lineWidth = 1.2 + val*.14;
+    ctx.beginPath(); ctx.ellipse(cx, cy, rr, ry, d.rotA, 0, Math.PI*2); ctx.stroke();
+  }
+
+  // secondary faint rings for richness
+  if (avg > 3) {
+    for (var j = 0; j < 3; j++) {
+      var sA = time*(.08+j*.04) + j*2.1;
+      var sT = Math.PI/4 + Math.sin(time*.1+j*1.7)*.4;
+      var sR = radius*(.15 + avg/10*.3);
+      var sEcc = Math.abs(Math.cos(sT));
+      ctx.strokeStyle = 'rgba(200,190,170,' + (avg/10*.04) + ')';
+      ctx.lineWidth = .5;
+      ctx.beginPath(); ctx.ellipse(cx, cy, sR, sR*Math.max(.05,sEcc), sA, 0, Math.PI*2); ctx.stroke();
+    }
+  }
+
+  // floating particles
+  for (var p = 0; p < Math.floor(avg*1.5); p++) {
+    var pa = time*.3 + p*2.4;
+    var pr = radius*(.2 + Math.sin(p*3.7)*.15) * (avg/10);
+    var px = cx + Math.cos(pa)*pr;
+    var py = cy + Math.sin(pa*.7)*pr*.6;
+    ctx.fillStyle = 'rgba(255,240,200,' + (avg/10*.08) + ')';
+    ctx.beginPath(); ctx.arc(px, py, .8+avg*.08, 0, 6.28); ctx.fill();
+  }
+
+  var coreR = 4 + avg*2.2;
+  ctx.fillStyle = 'rgba(255,245,220,' + (.08+avg/10*.25) + ')';
+  ctx.beginPath(); ctx.arc(cx, cy, coreR, 0, 6.28); ctx.fill();
+}
+
+/* ── radar chart ── */
+
+function drawRadar(cx, cy, values, radius, interactive, hl) {
+  // grid rings
+  for (var ring = 1; ring <= 5; ring++) {
+    var r = radius * ring/5;
+    ctx.beginPath();
+    for (var i = 0; i <= N; i++) {
+      var a = ANG(i % N);
+      ctx[i===0?'moveTo':'lineTo'](cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+    }
+    ctx.strokeStyle = 'rgba(255,255,255,.035)';
+    ctx.lineWidth = .5;
+    ctx.stroke();
+  }
+
+  // axis lines + labels
+  for (var i = 0; i < N; i++) {
+    var a = ANG(i);
+    ctx.strokeStyle = 'rgba(255,255,255,.05)';
+    ctx.lineWidth = .5;
+    ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx+Math.cos(a)*radius, cy+Math.sin(a)*radius); ctx.stroke();
+    var lx = cx + Math.cos(a)*(radius+16);
+    var ly = cy + Math.sin(a)*(radius+16);
+    var bright = (hl === i) ? .85 : (interactive ? .55 : .35);
+    ctx.fillStyle = 'rgba(220,212,195,' + bright + ')';
+    ctx.font = (interactive ? '13' : '11') + 'px Georgia, serif';
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(AXES[i], lx, ly);
+  }
+
+  // value polygon fill
+  ctx.beginPath();
+  for (var i = 0; i <= N; i++) {
+    var idx = i%N, a = ANG(idx), r = values[idx]/10*radius;
+    ctx[i===0?'moveTo':'lineTo'](cx+Math.cos(a)*r, cy+Math.sin(a)*r);
+  }
+  ctx.closePath();
+  ctx.fillStyle = interactive ? 'rgba(200,185,140,.1)' : 'rgba(160,150,130,.06)';
+  ctx.fill();
+  ctx.strokeStyle = interactive ? 'rgba(220,200,160,.35)' : 'rgba(180,170,150,.2)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+
+  // value dots
+  for (var i = 0; i < N; i++) {
+    var a = ANG(i), r = values[i]/10*radius;
+    var px = cx+Math.cos(a)*r, py = cy+Math.sin(a)*r;
+    var pr = interactive ? (hl===i ? 7 : 5) : 3;
+    ctx.fillStyle = interactive ? 'rgba(220,210,180,' + (hl===i?.7:.5) + ')' : 'rgba(170,160,140,.25)';
+    ctx.beginPath(); ctx.arc(px, py, pr, 0, 6.28); ctx.fill();
+    if (interactive && hl === i) {
+      ctx.fillStyle = 'rgba(220,210,185,.6)';
+      ctx.font = '13px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(Math.round(values[i]), px, py - 14);
+    }
+  }
+}
+
+/* ── mouse/touch handling ── */
+
+function canvasCoords(cx, cy) {
+  var rect = canvas.getBoundingClientRect();
+  var cAR = W/H, eAR = rect.width/rect.height;
+  var rw, rh, ox, oy;
+  if (eAR > cAR) { rh=rect.height; rw=rh*cAR; ox=(rect.width-rw)/2; oy=0; }
+  else { rw=rect.width; rh=rw/cAR; ox=0; oy=(rect.height-rh)/2; }
+  return { x: (cx-rect.left-ox)/rw*W, y: (cy-rect.top-oy)/rh*H };
+}
+
+function hitTest(mx, my) {
+  var p = panels[1];
+  for (var i = 0; i < N; i++) {
+    var a = ANG(i), r = displayValues[i]/10*p.rcR;
+    var px = p.cx+Math.cos(a)*r, py = p.rcCY+Math.sin(a)*r;
+    if ((mx-px)*(mx-px)+(my-py)*(my-py) < 20*20) return i;
+  }
+  return -1;
+}
+
+function updateValue(axis, mx, my) {
+  var p = panels[1];
+  var a = ANG(axis);
+  var dx = mx-p.cx, dy = my-p.rcCY;
+  var proj = dx*Math.cos(a)+dy*Math.sin(a);
+  var nv = Math.max(0.5, Math.min(10, proj/p.rcR*10));
+  if (Math.abs(nv - yourValues[axis]) > .2) {
+    yourValues[axis] = nv;
+    quoteReveal = Math.min(1, quoteReveal + .01);
+  }
+}
+
+function onDown(cx, cy) {
+  var m = canvasCoords(cx, cy);
+  dragging = hitTest(m.x, m.y);
+}
+function onMove(cx, cy) {
+  var m = canvasCoords(cx, cy);
+  if (dragging >= 0) { updateValue(dragging, m.x, m.y); }
+  else { hoverAxis = hitTest(m.x, m.y); canvas.style.cursor = hoverAxis>=0?'grab':'default'; }
+}
+function onUp() { dragging = -1; }
+
+canvas.addEventListener('mousedown', function(e) { onDown(e.clientX, e.clientY); });
+canvas.addEventListener('mousemove', function(e) { onMove(e.clientX, e.clientY); });
+canvas.addEventListener('mouseup', onUp);
+canvas.addEventListener('mouseleave', function() { dragging=-1; hoverAxis=-1; canvas.style.cursor='default'; });
+canvas.addEventListener('touchstart', function(e) { e.preventDefault(); var t=e.touches[0]; onDown(t.clientX,t.clientY); }, {passive:false});
+canvas.addEventListener('touchmove', function(e) { e.preventDefault(); var t=e.touches[0]; onMove(t.clientX,t.clientY); }, {passive:false});
+canvas.addEventListener('touchend', function(e) { e.preventDefault(); onUp(); }, {passive:false});
+
+/* ── animation ── */
+
+var t0 = null, paused = false, pauseT = 0, pauseStart = 0, raf = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  if (paused) { raf = requestAnimationFrame(tick); return; }
+  var elapsed = (ts-t0)/1000 - pauseT;
+  var time = elapsed;
+
+  for (var i = 0; i < N; i++) displayValues[i] += (yourValues[i]-displayValues[i])*.08;
+
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, W, H);
+  drawStars(time);
+
+  // reveal timing
+  var panelAlphas = [
+    ease.out3(clamp((elapsed-1.5)/2)),
+    ease.out3(clamp((elapsed-3.5)/2)),
+    ease.out3(clamp((elapsed-5.5)/2))
+  ];
+
+  // panel dividers
+  var divA = ease.out3(clamp((elapsed-2)/3));
+  ctx.strokeStyle = 'rgba(255,255,255,' + (divA*.025) + ')';
+  ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(390,60); ctx.lineTo(390,690); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(810,60); ctx.lineTo(810,690); ctx.stroke();
+
+  // three panels
+  var panelValues = [struggling, displayValues, superstar];
+  for (var pi = 0; pi < 3; pi++) {
+    var p = panels[pi];
+    var pa = panelAlphas[pi];
+    if (pa < .01) continue;
+    ctx.globalAlpha = pa;
+    drawForm(p.cx, p.formCY, panelValues[pi], p.formR, time);
+    drawRadar(p.cx, p.rcCY, panelValues[pi], p.rcR, pi===1, pi===1 ? (dragging>=0?dragging:hoverAxis) : -1);
+
+    // panel label
+    ctx.fillStyle = pi===1 ? 'rgba(230,220,200,.55)' : 'rgba(200,195,185,.35)';
+    ctx.font = (pi===1 ? '16' : '13') + 'px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(p.label, p.cx, p.rcCY + p.rcR + 38);
+    ctx.globalAlpha = 1;
+  }
+
+  // instruction hint (fades after first interaction)
+  if (quoteReveal < .05 && elapsed > 6) {
+    var hintA = ease.out3(clamp((elapsed-6)/2)) * (1-quoteReveal/.05);
+    ctx.fillStyle = 'rgba(200,195,185,' + (hintA*.4) + ')';
+    ctx.font = 'italic 13px Georgia, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('drag the points on the center chart', panels[1].cx, panels[1].rcCY + panels[1].rcR + 55);
+  }
+
+  // quote
+  var baseReveal = ease.out3(clamp((elapsed-8)/3));
+  var qa = (.07 + quoteReveal*.5) * baseReveal;
+  var pulse = 1 + Math.sin(time*.8)*.008;
+  ctx.fillStyle = 'rgba(220,215,200,' + qa + ')';
+  ctx.font = Math.round(22*pulse) + 'px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.fillText('comparison is the thief of joy', W/2, 740);
+
+  // vignette
+  var vg = ctx.createRadialGradient(W/2, H/2, Math.min(W,H)*.32, W/2, H/2, Math.max(W,H)*.72);
+  vg.addColorStop(0, 'rgba(0,0,5,0)');
+  vg.addColorStop(1, 'rgba(0,0,5,.28)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
+
+  raf = requestAnimationFrame(tick);
+}
+
+/* ── controls ── */
+
+window.restart = function () {
+  t0 = null; pauseT = 0; paused = false;
+  yourValues = [5,5,5,5,5,5];
+  displayValues = [5,5,5,5,5,5];
+  quoteReveal = 0;
+  if (raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+};
+
+window.togglePause = function () {
+  if (paused) { pauseT += (performance.now()-pauseStart)/1000; paused = false; }
+  else { pauseStart = performance.now(); paused = true; }
+};
+
+raf = requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>

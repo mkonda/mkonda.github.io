@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Immolation of Emotion</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#050510}
+canvas{display:block;width:100%;height:100%;object-fit:contain}
+.ctrls{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);display:flex;gap:8px;z-index:10;opacity:.35;transition:opacity .3s}
+.ctrls:hover{opacity:.9}
+.ctrls button{background:rgba(255,255,255,.06);color:#778;border:1px solid rgba(255,255,255,.1);padding:5px 14px;cursor:pointer;font:12px/1.4 monospace;border-radius:3px}
+.ctrls button:hover{background:rgba(255,255,255,.14);color:#aab}
+</style>
+</head>
+<body>
+<div class="ctrls">
+  <button onclick="restart()">Restart</button>
+  <button id="modeBtn" onclick="toggleMode()">Sections</button>
+  <button onclick="togglePause()">Pause</button>
+</div>
+<canvas id="art" width="1200" height="800"></canvas>
+<script>
+(function () {
+'use strict';
+
+var canvas = document.getElementById('art');
+var ctx = canvas.getContext('2d');
+var W = 1200, H = 800, CX = 600, CY = 385;
+
+/* ── helpers ── */
+
+function lerp(a, b, t) { return a + (b - a) * t; }
+function clamp(t) { return t < 0 ? 0 : t > 1 ? 1 : t; }
+
+var ease = {
+  out3: function(t) { return 1 - Math.pow(1 - t, 3); },
+  in2:  function(t) { return t * t; },
+  in3:  function(t) { return t * t * t; },
+  inOut: function(t) { return t < .5 ? 2*t*t : -1 + (4 - 2*t)*t; },
+  out2: function(t) { return t * (2 - t); }
+};
+
+/* ── Plutchik wheel data ── */
+
+var petals = [
+  { name: 'Joy',          inner: 'Ecstasy',     mid: 'Joy',          outer: 'Serenity',      hue: 52 },
+  { name: 'Trust',        inner: 'Admiration',   mid: 'Trust',        outer: 'Acceptance',    hue: 108 },
+  { name: 'Fear',         inner: 'Terror',       mid: 'Fear',         outer: 'Apprehension',  hue: 150 },
+  { name: 'Surprise',     inner: 'Amazement',    mid: 'Surprise',     outer: 'Distraction',   hue: 192 },
+  { name: 'Sadness',      inner: 'Grief',        mid: 'Sadness',      outer: 'Pensiveness',   hue: 222 },
+  { name: 'Disgust',      inner: 'Loathing',     mid: 'Disgust',      outer: 'Boredom',       hue: 278 },
+  { name: 'Anger',        inner: 'Rage',         mid: 'Anger',        outer: 'Annoyance',     hue: 2 },
+  { name: 'Anticipation', inner: 'Vigilance',    mid: 'Anticipation', outer: 'Interest',      hue: 32 }
+];
+
+var dyads = ['Love','Submission','Awe','Disapproval','Remorse','Contempt','Aggressiveness','Optimism'];
+
+var rings = [
+  { r1: 55, r2: 135 },
+  { r1: 142, r2: 230 },
+  { r1: 237, r2: 322 }
+];
+
+var TIP_EXT = 18;
+var labelR = [95, 186, 280];
+var labelSz = [14, 19, 15];
+var petalHA = [Math.PI/4*.36, Math.PI/4*.44, Math.PI/4*.48];
+
+function sectionHSL(hue, ring) {
+  var s = [82, 64, 38][ring];
+  var l = [40, 53, 74][ring];
+  return [hue, s, l];
+}
+
+/* ── rotation ── */
+
+var ROT_SPEED = 0.1;
+var WHEEL = 8, BURN = 18, AFTER = 13, FADE = 4;
+var DUR = WHEEL + BURN + AFTER + FADE;
+var FINAL_ROT = WHEEL * ROT_SPEED + BURN * ROT_SPEED * (2/3);
+
+function calcWheelRot(sec) {
+  if (sec < WHEEL) return sec * ROT_SPEED;
+  if (sec < WHEEL + BURN) {
+    var t = (sec - WHEEL) / BURN;
+    return WHEEL * ROT_SPEED + BURN * ROT_SPEED * (t - t*t*t/3);
+  }
+  return FINAL_ROT;
+}
+
+/* ── burn mode & state ── */
+
+var burnMode = 0;
+var ignitionIdx = Math.floor(Math.random() * 8);
+
+function burnHSL(h, s, l, bp) {
+  if (bp <= 0) return [h, s, l, 1];
+  if (bp >= 1) return [0, 0, 0, 0];
+  if (bp < .25) {
+    var t = bp / .25;
+    return [lerp(h,28,t), lerp(s,95,t), lerp(l,58,t), 1];
+  }
+  if (bp < .55) {
+    var t = (bp-.25)/.3;
+    return [lerp(28,6,t), lerp(95,22,t), lerp(58,10,t), 1];
+  }
+  var t = (bp-.55)/.45;
+  return [6, lerp(22,4,t), lerp(10,3,t), 1 - t*t];
+}
+
+function sectionBurnP(pi, ri, globalP) {
+  if (burnMode === 1) {
+    var ringDelay = [.18, .1, 0][ri];
+    return clamp((globalP - .1 - ringDelay) / .55);
+  }
+  var angDist = Math.min(Math.abs(pi - ignitionIdx), 8 - Math.abs(pi - ignitionIdx));
+  var angDelay = angDist / 4 * .22;
+  var ringDelay = [.36, .19, 0][ri];
+  return clamp((globalP - angDelay - ringDelay) / .18);
+}
+
+/* ── stars ── */
+
+var stars = [];
+for (var i = 0; i < 70; i++) {
+  stars.push({ x: Math.random()*W, y: Math.random()*H, r: .3+Math.random()*1,
+    ph: Math.random()*6.28, sp: .3+Math.random()*.6 });
+}
+function drawStars(time, alpha) {
+  for (var i = 0; i < stars.length; i++) {
+    var s = stars[i];
+    ctx.fillStyle = 'rgba(190,195,230,' + ((.2+Math.sin(time*s.sp+s.ph)*.12)*alpha) + ')';
+    ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ── flame (same as projecting.html) ── */
+
+function drawFlame(cx, cy, size, time, opts) {
+  opts = opts || {};
+  var a = opts.alpha !== undefined ? opts.alpha : 1;
+  var hs = opts.hueShift || 0;
+  var g0 = ctx.createRadialGradient(cx, cy-size*.15, size*.05, cx, cy, size*2.2);
+  g0.addColorStop(0, 'rgba(255,200,80,' + (.16*a) + ')');
+  g0.addColorStop(.35, 'rgba(200,100,30,' + (.06*a) + ')');
+  g0.addColorStop(1, 'rgba(60,15,5,0)');
+  ctx.fillStyle = g0;
+  ctx.fillRect(cx-size*3, cy-size*3, size*6, size*6);
+  for (var i = 0; i < 7; i++) {
+    var ph = time*(2.2+i*.35)+i*1.1;
+    var fl = Math.sin(ph)*.13+Math.sin(ph*2.3+.7)*.06+Math.sin(ph*4.1)*.03;
+    var h = size*(.82-i*.04)*(1+fl);
+    var w = size*(.19-i*.012)*(1+fl*.4);
+    var ox = Math.sin(ph*.6+i*.8)*size*.02;
+    ctx.beginPath();
+    ctx.moveTo(cx+ox, cy-h);
+    ctx.bezierCurveTo(cx+ox+w*1.3, cy-h*.5, cx+ox+w*1.8, cy+size*.08, cx+ox, cy+size*.12);
+    ctx.bezierCurveTo(cx+ox-w*1.8, cy+size*.08, cx+ox-w*1.3, cy-h*.5, cx+ox, cy-h);
+    ctx.closePath();
+    var fa = (1-i/7)*.5*a;
+    var hue = 35+i*6+hs;
+    ctx.fillStyle = 'hsla('+hue+','+Math.min(100,95-i*3)+'%,'+Math.min(90,75-i*6)+'%,'+fa+')';
+    ctx.fill();
+  }
+  var g1 = ctx.createRadialGradient(cx, cy-size*.25, 0, cx, cy-size*.1, size*.18);
+  g1.addColorStop(0, 'rgba(255,255,245,' + (.85*a) + ')');
+  g1.addColorStop(.6, 'rgba(255,240,200,' + (.35*a) + ')');
+  g1.addColorStop(1, 'rgba(255,200,100,0)');
+  ctx.fillStyle = g1;
+  ctx.beginPath(); ctx.ellipse(cx, cy-size*.15, size*.11, size*.2, 0, 0, 6.28); ctx.fill();
+  for (var s = 0; s < 5; s++) {
+    var sp = (time*1.5+s*1.4)%3;
+    var sy = cy-size*.3-sp*size*.35;
+    var sx = cx+Math.sin(time*2+s*3)*size*.08;
+    var sa = (1-sp/3)*.4*a;
+    if (sa > 0) {
+      ctx.fillStyle = 'rgba(255,220,100,'+sa+')';
+      ctx.beginPath(); ctx.arc(sx, sy, 1.8, 0, 6.28); ctx.fill();
+    }
+  }
+}
+
+/* ── fire tongue (lightweight flame for conflagration overlay) ── */
+
+function drawFireTongue(cx, cy, size, time, alpha) {
+  if (alpha < .01 || size < 2) return;
+  var g = ctx.createRadialGradient(cx, cy-size*.12, size*.08, cx, cy, size*1.1);
+  g.addColorStop(0, 'rgba(255,215,65,' + (.13*alpha) + ')');
+  g.addColorStop(.4, 'rgba(255,120,22,' + (.06*alpha) + ')');
+  g.addColorStop(1, 'rgba(160,30,5,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(cx-size*1.1, cy-size*1.1, size*2.2, size*2.2);
+  for (var i = 0; i < 3; i++) {
+    var ph = time*(2.8+i*.5)+i*1.3;
+    var fl = Math.sin(ph)*.16+Math.sin(ph*2.7)*.08;
+    var h = size*(.75-i*.06)*(1+fl);
+    var w = size*(.18-i*.02)*(1+fl*.4);
+    var ox = Math.sin(ph*.5+i*.9)*size*.04;
+    ctx.beginPath();
+    ctx.moveTo(cx+ox, cy-h);
+    ctx.bezierCurveTo(cx+ox+w*1.4, cy-h*.5, cx+ox+w*1.8, cy+size*.1, cx+ox, cy+size*.12);
+    ctx.bezierCurveTo(cx+ox-w*1.8, cy+size*.1, cx+ox-w*1.4, cy-h*.5, cx+ox, cy-h);
+    ctx.closePath();
+    ctx.fillStyle = 'hsla('+(28+i*7)+',95%,'+(62-i*10)+'%,'+((1-i/3)*.4*alpha)+')';
+    ctx.fill();
+  }
+}
+
+/* ── draw a wheel section ── */
+
+function drawSection(pi, ri, alpha, bp, time, wRot) {
+  if (alpha <= 0 || bp >= 1) return;
+  var petal = petals[pi];
+  var ring = rings[ri];
+  var ca = -Math.PI/2 + pi * Math.PI/4 + wRot;
+  var ha = petalHA[ri];
+  var col = sectionHSL(petal.hue, ri);
+  var bc = burnHSL(col[0], col[1], col[2], bp);
+  if (bc[3] * alpha < .005) return;
+  var pulse = 1 + Math.sin(time*.5+pi*.7+ri*1.1)*.012;
+
+  if (ri === 2) {
+    var r1 = ring.r1*pulse, tipR = (ring.r2+TIP_EXT)*pulse, r2 = ring.r2*pulse;
+    ctx.beginPath();
+    ctx.arc(CX, CY, r1, ca-ha, ca+ha);
+    ctx.quadraticCurveTo(CX+Math.cos(ca+ha*.55)*r2, CY+Math.sin(ca+ha*.55)*r2,
+      CX+Math.cos(ca)*tipR, CY+Math.sin(ca)*tipR);
+    ctx.quadraticCurveTo(CX+Math.cos(ca-ha*.55)*r2, CY+Math.sin(ca-ha*.55)*r2,
+      CX+Math.cos(ca-ha)*r1, CY+Math.sin(ca-ha)*r1);
+    ctx.closePath();
+  } else {
+    ctx.beginPath();
+    ctx.arc(CX, CY, ring.r2*pulse, ca-ha, ca+ha);
+    ctx.arc(CX, CY, ring.r1*pulse, ca+ha, ca-ha, true);
+    ctx.closePath();
+  }
+
+  var outerR = ri === 2 ? ring.r2+TIP_EXT : ring.r2;
+  var g = ctx.createRadialGradient(CX, CY, ring.r1, CX, CY, outerR);
+  var h = bc[0], s = bc[1], l = bc[2], a2 = bc[3]*alpha;
+  g.addColorStop(0, 'hsla('+h+','+Math.max(0,s-5)+'%,'+Math.max(0,l-6)+'%,'+a2+')');
+  g.addColorStop(.5, 'hsla('+h+','+s+'%,'+l+'%,'+a2+')');
+  g.addColorStop(1, 'hsla('+h+','+Math.min(100,s+4)+'%,'+Math.min(100,l+8)+'%,'+a2+')');
+  ctx.fillStyle = g;
+  ctx.fill();
+
+  if (bp < .25) {
+    ctx.strokeStyle = 'rgba(255,255,255,'+(0.1*alpha*(1-bp/.25))+')';
+    ctx.lineWidth = .6;
+    ctx.stroke();
+  }
+}
+
+/* ── radial text ── */
+
+function drawRadialText(text, angle, radius, fontSize, color) {
+  ctx.save();
+  ctx.translate(CX, CY);
+  ctx.rotate(angle);
+  ctx.translate(radius, 0);
+  var a = ((angle%(Math.PI*2))+Math.PI*2)%(Math.PI*2);
+  if (a > Math.PI/2 && a < Math.PI*1.5) ctx.rotate(Math.PI);
+  ctx.fillStyle = color;
+  ctx.font = fontSize + 'px Georgia, serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(text, 0, 0);
+  ctx.restore();
+}
+
+/* ── draw full wheel ── */
+
+function drawWheel(revealP, globalBurnP, time, wRot) {
+  if (revealP > .15 && globalBurnP < .2) {
+    var glowA = ease.out3(clamp((revealP-.15)/.3)) * (1-clamp(globalBurnP/.15));
+    var wg = ctx.createRadialGradient(CX, CY, rings[2].r2*.6, CX, CY, rings[2].r2*1.2);
+    wg.addColorStop(0, 'rgba(180,160,120,0)');
+    wg.addColorStop(.5, 'rgba(140,120,80,'+(glowA*.018)+')');
+    wg.addColorStop(1, 'rgba(100,80,50,0)');
+    ctx.fillStyle = wg;
+    ctx.fillRect(CX-400, CY-400, 800, 800);
+  }
+
+  var revealStarts = [0, .18, .36];
+  for (var ri = 0; ri < 3; ri++) {
+    var ringAlpha = ease.out3(clamp((revealP - revealStarts[ri]) / .26));
+    for (var pi = 0; pi < 8; pi++) {
+      var bp = globalBurnP > 0 ? sectionBurnP(pi, ri, globalBurnP) : 0;
+      drawSection(pi, ri, ringAlpha, bp, time, wRot);
+    }
+  }
+
+  var labelAlpha = ease.out3(clamp((revealP - .5) / .3));
+  if (labelAlpha > 0) {
+    var labelNames = ['inner', 'mid', 'outer'];
+    for (var ri = 0; ri < 3; ri++) {
+      for (var pi = 0; pi < 8; pi++) {
+        var bp = globalBurnP > 0 ? sectionBurnP(pi, ri, globalBurnP) : 0;
+        if (bp > .4) continue;
+        var la = labelAlpha * (1 - bp/.4);
+        var ca = -Math.PI/2 + pi * Math.PI/4 + wRot;
+        var col = bp < .12 ? 'rgba(255,255,255,'+(la*.75)+')'
+                           : 'rgba(255,'+Math.floor(210-bp*500)+','+Math.floor(120-bp*250)+','+(la*.55)+')';
+        drawRadialText(petals[pi][labelNames[ri]], ca, labelR[ri], labelSz[ri], col);
+      }
+    }
+  }
+
+  var dyadAlpha = ease.out3(clamp((revealP - .7) / .25));
+  if (dyadAlpha > 0 && globalBurnP < .35) {
+    var da = dyadAlpha * (1 - clamp(globalBurnP / .25));
+    for (var di = 0; di < 8; di++) {
+      var dAngle = -Math.PI/2 + (di+.5) * Math.PI/4 + wRot;
+      drawRadialText(dyads[di], dAngle, rings[2].r2+TIP_EXT+28, 14, 'rgba(200,195,180,'+(da*.4)+')');
+    }
+  }
+
+  if (revealP > .25 && globalBurnP < .08) {
+    var ca2 = ease.out3(clamp((revealP-.25)/.25)) * (1-globalBurnP/.08);
+    for (var c = 0; c < 3; c++) {
+      var cr = rings[0].r1-6-c*9;
+      if (cr < 4) continue;
+      ctx.strokeStyle = 'rgba(180,170,155,'+(ca2*(.1-.025*c))+')';
+      ctx.lineWidth = .5;
+      ctx.beginPath(); ctx.arc(CX, CY, cr, 0, 6.28); ctx.stroke();
+    }
+    ctx.fillStyle = 'rgba(200,190,170,'+(ca2*.07)+')';
+    ctx.beginPath(); ctx.arc(CX, CY, 5, 0, 6.28); ctx.fill();
+    ctx.strokeStyle = 'rgba(180,170,155,'+(ca2*.05)+')';
+    ctx.lineWidth = .3;
+    for (var rl = 0; rl < 8; rl++) {
+      var rla = -Math.PI/2 + rl*Math.PI/4 + wRot;
+      ctx.beginPath();
+      ctx.moveTo(CX+Math.cos(rla)*8, CY+Math.sin(rla)*8);
+      ctx.lineTo(CX+Math.cos(rla)*(rings[0].r1-5), CY+Math.sin(rla)*(rings[0].r1-5));
+      ctx.stroke();
+    }
+  }
+}
+
+/* ── fire effects: section mode ── */
+
+function drawFireGlows(globalBurnP, time, wRot) {
+  if (globalBurnP <= 0) return;
+  for (var ri = 2; ri >= 0; ri--) {
+    for (var pi = 0; pi < 8; pi++) {
+      var bp = sectionBurnP(pi, ri, globalBurnP);
+      if (bp < .03 || bp > .8) continue;
+      var intensity = Math.sin(bp / .75 * Math.PI);
+      var flicker = 1 + Math.sin(time*9+pi*2.3+ri*1.7)*.18;
+      var ca = -Math.PI/2 + pi*Math.PI/4 + wRot;
+      var r = (rings[ri].r1 + rings[ri].r2)/2;
+      var x = CX + Math.cos(ca)*r;
+      var y = CY + Math.sin(ca)*r;
+      var sz = (rings[ri].r2 - rings[ri].r1)*.65*intensity*flicker;
+      if (sz < 2) continue;
+      var g = ctx.createRadialGradient(x, y, 0, x, y, sz);
+      g.addColorStop(0, 'rgba(255,210,50,' + (intensity*.3*flicker) + ')');
+      g.addColorStop(.35, 'rgba(255,120,20,' + (intensity*.15) + ')');
+      g.addColorStop(1, 'rgba(200,50,10,0)');
+      ctx.fillStyle = g;
+      ctx.fillRect(x-sz, y-sz, sz*2, sz*2);
+    }
+  }
+}
+
+/* ── large flame (substantial fire body for conflagration) ── */
+
+function drawLargeFlame(cx, cy, size, time, alpha) {
+  if (alpha < .01 || size < 8) return;
+  var g0 = ctx.createRadialGradient(cx, cy-size*.18, size*.08, cx, cy+size*.05, size*1.3);
+  g0.addColorStop(0, 'rgba(255,210,60,' + (.11*alpha) + ')');
+  g0.addColorStop(.35, 'rgba(255,115,20,' + (.05*alpha) + ')');
+  g0.addColorStop(1, 'rgba(130,22,4,0)');
+  ctx.fillStyle = g0;
+  ctx.fillRect(cx-size*1.3, cy-size*1.3, size*2.6, size*2.6);
+  for (var i = 0; i < 5; i++) {
+    var ph = time*(1.8+i*.3)+i*1.4;
+    var fl = Math.sin(ph)*.14+Math.sin(ph*2.1+.5)*.07+Math.sin(ph*3.5)*.04;
+    var h = size*(.88-i*.05)*(1+fl);
+    var w = size*(.24-i*.018)*(1+fl*.35);
+    var ox = Math.sin(ph*.4+i*.7)*size*.05;
+    ctx.beginPath();
+    ctx.moveTo(cx+ox, cy-h);
+    ctx.bezierCurveTo(cx+ox+w*1.3, cy-h*.42, cx+ox+w*2, cy+size*.12, cx+ox, cy+size*.18);
+    ctx.bezierCurveTo(cx+ox-w*2, cy+size*.12, cx+ox-w*1.3, cy-h*.42, cx+ox, cy-h);
+    ctx.closePath();
+    ctx.fillStyle = 'hsla('+(22+i*6)+','+(97-i*4)+'%,'+(58-i*8)+'%,'+((1-i/5)*.44*alpha)+')';
+    ctx.fill();
+  }
+  var g1 = ctx.createRadialGradient(cx, cy+size*.03, 0, cx, cy-size*.06, size*.22);
+  g1.addColorStop(0, 'rgba(255,255,238,' + (.28*alpha) + ')');
+  g1.addColorStop(.5, 'rgba(255,230,140,' + (.1*alpha) + ')');
+  g1.addColorStop(1, 'rgba(255,180,55,0)');
+  ctx.fillStyle = g1;
+  ctx.beginPath(); ctx.ellipse(cx, cy, size*.16, size*.25, 0, 0, 6.28); ctx.fill();
+}
+
+/* ── fire effects: conflagration mode ── */
+
+function drawConflagration(time, globalP, wRot) {
+  var buildP = clamp(globalP / .15);
+  var dieP = clamp((globalP - .55) / .45);
+  var intensity = buildP * (1 - dieP*dieP);
+  if (intensity < .01) return;
+
+  var wind = Math.sin(time*.18)*18*intensity;
+  var ignAngle = -Math.PI/2 + ignitionIdx*Math.PI/4 + wRot;
+  var ignDist = rings[1].r2 * .35;
+  var spread = clamp(buildP*1.5);
+  var fireCX = lerp(CX+Math.cos(ignAngle)*ignDist, CX, spread);
+  var fireCY = lerp(CY+Math.sin(ignAngle)*ignDist, CY-15, spread);
+
+  // base heat radiation
+  var baseR = (180+buildP*220)*intensity;
+  var hg = ctx.createRadialGradient(fireCX, fireCY, 12, fireCX, fireCY+25, baseR);
+  hg.addColorStop(0, 'rgba(255,215,65,' + (intensity*.22) + ')');
+  hg.addColorStop(.2, 'rgba(255,150,30,' + (intensity*.14) + ')');
+  hg.addColorStop(.5, 'rgba(220,65,10,' + (intensity*.07) + ')');
+  hg.addColorStop(1, 'rgba(90,18,4,0)');
+  ctx.fillStyle = hg;
+  ctx.fillRect(fireCX-baseR, fireCY-baseR, baseR*2, baseR*2);
+
+  // main fire body — 5 large overlapping flames
+  var flameDefs = [
+    { ox: 0,   oy: -12,  sz: 1.0,  tOff: 0,   delay: 0 },
+    { ox: -55, oy: 12,   sz: .84,  tOff: 1.3, delay: .12 },
+    { ox: 48,  oy: 8,    sz: .9,   tOff: 2.7, delay: .18 },
+    { ox: 18,  oy: -32,  sz: 1.08, tOff: .8,  delay: .08 },
+    { ox: -28, oy: -22,  sz: .92,  tOff: 1.8, delay: .22 }
+  ];
+  for (var fi = 0; fi < flameDefs.length; fi++) {
+    var fd = flameDefs[fi];
+    var localBuild = clamp((buildP-fd.delay)/.5);
+    if (localBuild < .01) continue;
+    var localI = intensity*localBuild;
+    var fSz = fd.sz*215*localI;
+    drawLargeFlame(fireCX+fd.ox*localI+wind*fd.sz, fireCY+fd.oy*localI, fSz, time+fd.tOff, localI*.55);
+  }
+
+  // rising column — tall flames above the blaze
+  if (buildP > .3) {
+    var colI = intensity*clamp((buildP-.3)/.3);
+    drawLargeFlame(fireCX+wind*1.4, fireCY-175, 165*colI, time+.5, colI*.42);
+    drawLargeFlame(fireCX+wind*1.8, fireCY-290, 120*colI, time+1.5, colI*.3);
+    if (colI > .5)
+      drawLargeFlame(fireCX+wind*2.2, fireCY-380, 85*colI, time+2.5, colI*.2);
+  }
+
+  // white-hot core
+  if (buildP > .18) {
+    var coreI = intensity*clamp((buildP-.18)/.3);
+    var coreR = 75*coreI;
+    var cg = ctx.createRadialGradient(fireCX, fireCY+4, 0, fireCX, fireCY, coreR);
+    cg.addColorStop(0, 'rgba(255,255,235,' + (coreI*.2) + ')');
+    cg.addColorStop(.4, 'rgba(255,230,145,' + (coreI*.09) + ')');
+    cg.addColorStop(1, 'rgba(255,175,55,0)');
+    ctx.fillStyle = cg;
+    ctx.beginPath(); ctx.arc(fireCX, fireCY, coreR, 0, 6.28); ctx.fill();
+  }
+
+  // edge flames licking around the perimeter
+  if (buildP > .12) {
+    var edgeI = intensity*clamp((buildP-.12)/.3);
+    for (var ei = 0; ei < 8; ei++) {
+      var ea = -Math.PI/2 + ei*Math.PI/4 + wRot + Math.sin(time*.5+ei)*.12;
+      var er = rings[2].r2*.82;
+      var ex = CX + Math.cos(ea)*er + wind*.4;
+      var ey = CY + Math.sin(ea)*er;
+      var eSz = (32 + Math.sin(time*2+ei*1.7)*10)*edgeI;
+      drawFireTongue(ex, ey-5, eSz, time+ei*.6, edgeI*.38);
+    }
+  }
+
+  // smoke plumes above
+  for (var si = 0; si < 6; si++) {
+    var sx = fireCX + Math.sin(time*.11+si*1.1)*30 + wind*2.2;
+    var sy = fireCY - 340 - si*48 + Math.sin(time*.22+si*1.8)*18;
+    var sr = (42+si*16)*intensity;
+    if (sr < 3) continue;
+    ctx.fillStyle = 'rgba(32,26,20,' + (intensity*.05*(6-si)/6) + ')';
+    ctx.beginPath(); ctx.ellipse(sx, sy, sr, sr*.6, wind*.002, 0, 6.28); ctx.fill();
+  }
+
+  // sparks rising from the fire
+  for (var sp = 0; sp < 30; sp++) {
+    var seed = sp*73.7;
+    var sparkAge = (time*1.2+seed*.1)%3.5;
+    if (sparkAge > 2.8) continue;
+    var spx = fireCX + Math.sin(seed+sparkAge*.22)*75*(1-sparkAge*.04) + wind*sparkAge*.25;
+    var spy = fireCY - sparkAge*115 - Math.sin(seed*.5)*28;
+    var spA = (1-sparkAge/2.8)*intensity*.48;
+    ctx.fillStyle = 'hsla('+(22+Math.sin(seed)*14)+',95%,'+(56-sparkAge*10)+'%,'+spA+')';
+    ctx.beginPath(); ctx.arc(spx, spy, 1.6+Math.sin(seed)*.8, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ── embers ── */
+
+function drawEmbers(time, globalBurnP, wRot, density) {
+  if (globalBurnP < .05) return;
+  var count = Math.floor(55 * (density || 1));
+  for (var i = 0; i < count; i++) {
+    var seed = i * 137.5;
+    var startP = (Math.sin(seed*.7)+1)*.5 * .55;
+    if (globalBurnP < startP) continue;
+    var age = ((time - startP*22)*.35 + seed*.01) % 2.8;
+    if (age < 0 || age > 2.2) continue;
+    var baseA = seed*.1 + wRot;
+    var baseR = 50 + Math.sin(seed*.3)*180;
+    var x = CX + Math.cos(baseA)*baseR*(1-age*.03);
+    var y = CY + Math.sin(baseA)*baseR - age*40;
+    var alpha = (1-age/2.2)*.38 * clamp((globalBurnP-startP)/.1);
+    var hue = 18 + Math.sin(seed)*18;
+    ctx.fillStyle = 'hsla('+hue+',92%,'+(52-age*12)+'%,'+alpha+')';
+    ctx.beginPath(); ctx.arc(x, y, 1.4+Math.sin(seed*.5)*.8, 0, 6.28); ctx.fill();
+  }
+}
+
+/* ── spark flash ── */
+
+function drawSpark(p, time, wRot, scale) {
+  if (p > 1) return;
+  scale = scale || 1;
+  var ca = -Math.PI/2 + ignitionIdx*Math.PI/4 + wRot;
+  var r = rings[2].r2 + TIP_EXT;
+  var x = CX + Math.cos(ca)*r;
+  var y = CY + Math.sin(ca)*r;
+  var alpha = Math.sin(p*Math.PI)*.85;
+  var sz = (8+p*30)*scale;
+  var g = ctx.createRadialGradient(x, y, 0, x, y, sz);
+  g.addColorStop(0, 'rgba(255,255,240,'+alpha+')');
+  g.addColorStop(.4, 'rgba(255,210,60,'+(alpha*.5)+')');
+  g.addColorStop(1, 'rgba(255,100,20,0)');
+  ctx.fillStyle = g;
+  ctx.fillRect(x-sz, y-sz, sz*2, sz*2);
+}
+
+/* ── aftermath ── */
+
+function drawAftermath(time, p, wRot) {
+  if (p < .15) {
+    var abA = (1-p/.15)*.08;
+    var g = ctx.createRadialGradient(CX, CY, 0, CX, CY, 240);
+    g.addColorStop(0, 'rgba(180,90,25,'+abA+')');
+    g.addColorStop(1, 'rgba(60,20,5,0)');
+    ctx.fillStyle = g;
+    ctx.fillRect(CX-240, CY-240, 480, 480);
+  }
+
+  if (p < .35) {
+    var ghostA = (1-p/.35)*.03;
+    ctx.strokeStyle = 'rgba(70,50,35,'+ghostA+')';
+    ctx.lineWidth = .5;
+    for (var pi = 0; pi < 8; pi++) {
+      var ca = -Math.PI/2 + pi*Math.PI/4 + wRot;
+      for (var ri = 0; ri < 3; ri++) {
+        var ha = petalHA[ri];
+        if (ri === 2) {
+          var r1 = rings[ri].r1, tipR = rings[ri].r2+TIP_EXT;
+          ctx.beginPath();
+          ctx.arc(CX, CY, r1, ca-ha, ca+ha);
+          ctx.quadraticCurveTo(CX+Math.cos(ca+ha*.55)*rings[ri].r2, CY+Math.sin(ca+ha*.55)*rings[ri].r2,
+            CX+Math.cos(ca)*tipR, CY+Math.sin(ca)*tipR);
+          ctx.quadraticCurveTo(CX+Math.cos(ca-ha*.55)*rings[ri].r2, CY+Math.sin(ca-ha*.55)*rings[ri].r2,
+            CX+Math.cos(ca-ha)*r1, CY+Math.sin(ca-ha)*r1);
+          ctx.closePath(); ctx.stroke();
+        } else {
+          ctx.beginPath();
+          ctx.arc(CX, CY, rings[ri].r2, ca-ha, ca+ha);
+          ctx.arc(CX, CY, rings[ri].r1, ca+ha, ca-ha, true);
+          ctx.closePath(); ctx.stroke();
+        }
+      }
+    }
+  }
+
+  for (var i = 0; i < 40; i++) {
+    var seed = i*97.3+50;
+    var x = CX + Math.sin(seed+time*.04)*(120+Math.sin(seed*.3)*80);
+    var y = CY - ((time*8+i*14)%500)+200;
+    if (y < CY-320 || y > CY+200) continue;
+    var alpha = p*.13*(1-Math.abs(y-CY)/320);
+    ctx.fillStyle = 'rgba(95,88,78,'+alpha+')';
+    ctx.beginPath(); ctx.arc(x, y, .9+Math.sin(seed)*.6, 0, 6.28); ctx.fill();
+  }
+
+  if (p > .22) {
+    var flameP = ease.out3(clamp((p-.22)/.45));
+    var flameSize = 24 + flameP*20;
+    drawFlame(CX, CY, flameSize, time, { alpha: flameP*.85 });
+  }
+}
+
+/* ── animation ── */
+
+var t0 = null, paused = false, pauseT = 0, pauseStart = 0, raf = null;
+
+function tick(ts) {
+  if (!t0) t0 = ts;
+  if (paused) { raf = requestAnimationFrame(tick); return; }
+
+  var elapsed = (ts-t0)/1000 - pauseT;
+  var sec = elapsed % DUR;
+  var time = elapsed;
+  var wRot = calcWheelRot(sec);
+
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#050510';
+  ctx.fillRect(0, 0, W, H);
+
+  var phase, p;
+  if (sec < WHEEL) { phase = 'wheel'; p = sec/WHEEL; }
+  else if (sec < WHEEL+BURN) { phase = 'burn'; p = (sec-WHEEL)/BURN; }
+  else if (sec < WHEEL+BURN+AFTER) { phase = 'after'; p = (sec-WHEEL-BURN)/AFTER; }
+  else { phase = 'fade'; p = (sec-WHEEL-BURN-AFTER)/FADE; }
+
+  if (phase === 'wheel') {
+    drawStars(time, .1*ease.out3(clamp(p*2)));
+    drawWheel(p, 0, time, wRot);
+    if (p > .6) {
+      var ta = ease.out3((p-.6)/.4);
+      ctx.fillStyle = 'rgba(180,170,155,'+(ta*.4)+')';
+      ctx.font = '22px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('I M M O L A T I O N   O F   E M O T I O N', CX, CY+375);
+    }
+
+  } else if (phase === 'burn') {
+    drawStars(time, .1*(1-ease.in2(clamp(p*1.5))));
+    drawWheel(1, p, time, wRot);
+
+    if (burnMode === 0) {
+      drawFireGlows(p, time, wRot);
+      drawEmbers(time, p, wRot);
+    } else {
+      drawConflagration(time, p, wRot);
+      drawEmbers(time, p, wRot, 2.5);
+    }
+
+    if (p < .08) drawSpark(p/.08, time, wRot, burnMode === 1 ? 1.6 : 1);
+
+    var titleBurn = clamp(p / (burnMode === 1 ? .12 : .2));
+    if (titleBurn < 1) {
+      var tc = burnHSL(35, 20, 65, titleBurn);
+      ctx.fillStyle = 'hsla('+tc[0]+','+tc[1]+'%,'+tc[2]+'%,'+(tc[3]*.4)+')';
+      ctx.font = '22px Georgia, serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('I M M O L A T I O N   O F   E M O T I O N', CX, CY+375);
+    }
+
+  } else if (phase === 'after') {
+    drawEmbers(time, 1, FINAL_ROT);
+    drawAftermath(time, p, FINAL_ROT);
+
+  } else if (phase === 'fade') {
+    ctx.globalAlpha = 1-ease.in3(clamp(p/.8));
+    drawAftermath(time, 1, FINAL_ROT);
+    ctx.globalAlpha = 1;
+  }
+
+  var vg = ctx.createRadialGradient(CX, CY, Math.min(W,H)*.28, CX, CY, Math.max(W,H)*.72);
+  vg.addColorStop(0, 'rgba(0,0,5,0)');
+  vg.addColorStop(1, 'rgba(0,0,5,.4)');
+  ctx.fillStyle = vg;
+  ctx.fillRect(0, 0, W, H);
+
+  raf = requestAnimationFrame(tick);
+}
+
+/* ── controls ── */
+
+window.restart = function () {
+  t0 = null; pauseT = 0; paused = false;
+  ignitionIdx = Math.floor(Math.random() * 8);
+  if (raf) cancelAnimationFrame(raf);
+  raf = requestAnimationFrame(tick);
+};
+
+window.toggleMode = function () {
+  burnMode = 1 - burnMode;
+  document.getElementById('modeBtn').textContent = burnMode === 0 ? 'Sections' : 'Blaze';
+};
+
+window.togglePause = function () {
+  if (paused) { pauseT += (performance.now()-pauseStart)/1000; paused = false; }
+  else { pauseStart = performance.now(); paused = true; }
+};
+
+raf = requestAnimationFrame(tick);
+
+})();
+</script>
+</body>
+</html>
