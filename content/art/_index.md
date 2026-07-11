@@ -91,3 +91,18 @@ c-real and c-imag sliders let you morph the fractal continuously.
 Detail and color-shift knobs tighten or loosen the patterns.
 
 <a href="/art/fractals.html" target="_blank">View fullscreen</a>
+
+---
+
+## [Signal](/posts/signal/)
+
+An animated piece about information overload and finding what
+matters. Ninety noise particles — *trending, clickbait, hot take,
+speculation* — flood the canvas, then five signal words —
+*evidence, context, values, experience, intuition* — slowly
+separate from the noise and form a connected framework at center.
+Three misidentification moments show noise briefly mistaken for
+signal. The hybrid rendering shifts particles between abstract
+dots and readable text as focus sharpens.
+
+<a href="/art/signal.html" target="_blank">View fullscreen</a>
