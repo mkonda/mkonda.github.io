@@ -1,6 +1,6 @@
 +++
 title = "Projecting"
-date = "2026-07-14"
+date = "2026-07-09"
 description = "An animated art piece about the many windows we place between our inner flame and the outside world"
 tags = ["art", "programming"]
 featured = true

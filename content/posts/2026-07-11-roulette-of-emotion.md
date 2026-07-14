@@ -1,6 +1,6 @@
 +++
 title = "Roulette of Emotion"
-date = "2026-07-21"
+date = "2026-07-11"
 description = "An animated art piece that spins a roulette wheel of emotions and lands on a random selection"
 tags = ["art", "programming"]
 featured = true

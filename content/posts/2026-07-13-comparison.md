@@ -1,6 +1,6 @@
 +++
 title = "Comparison"
-date = "2026-07-28"
+date = "2026-07-13"
 description = "An interactive art piece about measuring yourself against others — and the cost of doing so"
 tags = ["art", "programming"]
 featured = true

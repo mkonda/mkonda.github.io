@@ -1,6 +1,6 @@
 +++
 title = "Immolation of Emotion"
-date = "2026-07-16"
+date = "2026-07-10"
 description = "An animated art piece that burns away the Plutchik wheel of emotions to see what remains"
 tags = ["art", "programming"]
 featured = true
