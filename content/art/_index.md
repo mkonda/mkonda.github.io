@@ -9,7 +9,7 @@ mathematical beauty.
 
 ---
 
-## [Inner Landscape](/posts/inner-landscape/)
+## [Inner Landscape](/posts/2026-07-08-inner-landscape/)
 
 An animated piece that maps 24 emotions to mountains viewed from
 different altitudes. A window cracks, revealing an aerial view of
@@ -20,7 +20,7 @@ Each reload shuffles the emotion-to-peak mapping.
 
 ---
 
-## [Projecting](/posts/projecting/)
+## [Projecting](/posts/2026-07-09-projecting/)
 
 A sphere with a small flame at its center and 32 windows on its
 surface. The sphere rotates and zooms into a different window each
@@ -33,7 +33,7 @@ and the world.
 
 ---
 
-## [Immolation of Emotion](/posts/immolation-of-emotion/)
+## [Immolation of Emotion](/posts/2026-07-10-immolation-of-emotion/)
 
 A stylized Plutchik wheel of emotions — eight families, three
 intensities each — rendered as a rotating flower, then set on fire.
@@ -45,7 +45,7 @@ burns away is the same small flame from Projecting.
 
 ---
 
-## [Roulette of Emotion](/posts/roulette-of-emotion/)
+## [Roulette of Emotion](/posts/2026-07-11-roulette-of-emotion/)
 
 A roulette wheel with 24 Plutchik emotions instead of numbers,
 viewed at a casino-table perspective. It spins slowly (every emotion
@@ -57,7 +57,7 @@ Each restart lands on a different triplet.
 
 ---
 
-## [Enough](/posts/enough/)
+## [Enough](/posts/2026-07-12-enough/)
 
 Word clouds of self-worth — what others see (blue-silver), who you
 are (warm gold), what you've done (soft green) — drift together, then
@@ -69,7 +69,7 @@ What remains: "you are enough."
 
 ---
 
-## [Comparison](/posts/comparison/)
+## [Comparison](/posts/2026-07-13-comparison/)
 
 An interactive piece with three panels: someone struggling, you,
 and someone thriving. Each panel shows an abstract 3D orbital form
@@ -82,7 +82,7 @@ a nearly invisible quote becomes at the bottom.
 
 ---
 
-## [Fractals](/posts/fractals/)
+## [Fractals](/posts/2026-07-13-fractals/)
 
 An interactive fractal explorer with five types (Mandelbrot, Julia,
 Burning Ship, Tricorn, Newton), six color palettes, and real-time
@@ -94,7 +94,7 @@ Detail and color-shift knobs tighten or loosen the patterns.
 
 ---
 
-## [Signal](/posts/signal/)
+## [Signal](/posts/2026-07-14-signal/)
 
 An animated piece about information overload and finding what
 matters. Ninety noise particles — *trending, clickbait, hot take,
