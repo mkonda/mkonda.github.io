@@ -7,6 +7,8 @@ HTML file — Canvas 2D and vanilla JavaScript, zero dependencies.
 They explore emotions, self-perception, inner experience, and
 mathematical beauty.
 
+<a href="/art/gallery.html" target="_blank">&#9654; Launch Gallery</a> — full-screen slideshow, rotates every 5 minutes
+
 ---
 
 ## [Inner Landscape](/posts/2026-07-08-inner-landscape/)

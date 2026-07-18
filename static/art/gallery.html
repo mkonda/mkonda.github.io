@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Art Gallery</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{width:100%;height:100%;overflow:hidden;background:#0a0a0f;font-family:'Courier New',monospace}
+
+iframe{
+  position:absolute;top:0;left:0;width:100%;height:100%;
+  border:none;opacity:0;
+  transition:opacity 1.8s ease-in-out;
+  pointer-events:none;
+}
+iframe.active{opacity:1;pointer-events:auto}
+
+.title-bar{
+  position:fixed;top:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:18px 24px;
+  background:linear-gradient(to bottom,rgba(0,0,0,.6),transparent);
+  opacity:0;transition:opacity .4s;z-index:20;
+  pointer-events:none;
+}
+body:hover .title-bar{opacity:1}
+
+.title-text{
+  color:rgba(255,255,255,.8);font-size:16px;letter-spacing:2px;
+  text-transform:uppercase;
+}
+.title-index{
+  color:rgba(255,255,255,.35);font-size:12px;margin-left:12px;
+}
+
+.controls{
+  position:fixed;bottom:0;left:0;right:0;
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:18px 24px;
+  background:linear-gradient(to top,rgba(0,0,0,.6),transparent);
+  opacity:0;transition:opacity .4s;z-index:20;
+}
+body:hover .controls{opacity:1}
+
+.controls button{
+  background:rgba(255,255,255,.08);color:rgba(255,255,255,.6);
+  border:1px solid rgba(255,255,255,.12);
+  padding:6px 16px;cursor:pointer;
+  font:12px/1.4 'Courier New',monospace;letter-spacing:1px;
+  border-radius:3px;transition:all .2s;
+}
+.controls button:hover{
+  background:rgba(255,255,255,.18);color:rgba(255,255,255,.9);
+}
+.controls button.active-btn{
+  background:rgba(255,255,255,.15);color:rgba(255,255,255,.9);
+  border-color:rgba(255,255,255,.3);
+}
+
+.progress{
+  position:fixed;bottom:0;left:0;height:2px;
+  background:rgba(255,255,255,.2);z-index:21;
+  transition:width .5s linear;
+}
+
+.timer-display{
+  color:rgba(255,255,255,.35);font-size:11px;min-width:40px;text-align:center;
+}
+</style>
+</head>
+<body>
+
+<div class="title-bar">
+  <span class="title-text" id="title"></span>
+  <span class="title-index" id="index"></span>
+</div>
+
+<div class="controls">
+  <button onclick="prev()" title="Previous piece">&#9664;</button>
+  <button onclick="togglePause()" id="pauseBtn" title="Pause / Resume rotation">Pause</button>
+  <button onclick="next()" title="Next piece">&#9654;</button>
+  <span class="timer-display" id="timer"></span>
+  <button onclick="toggleFullscreen()" id="fsBtn" title="Toggle fullscreen">Fullscreen</button>
+  <button onclick="shuffle()" title="Shuffle order">Shuffle</button>
+</div>
+
+<div class="progress" id="progress"></div>
+
+<script>
+(function () {
+'use strict';
+
+var pieces = [
+  { src: '/art/inner-landscape.html', title: 'Inner Landscape' },
+  { src: '/art/projecting.html', title: 'Projecting' },
+  { src: '/art/immolation-of-emotion.html', title: 'Immolation of Emotion' },
+  { src: '/art/roulette-of-emotion.html', title: 'Roulette of Emotion' },
+  { src: '/art/enough.html', title: 'Enough' },
+  { src: '/art/comparison.html', title: 'Comparison' },
+  { src: '/art/fractals.html', title: 'Fractals' },
+  { src: '/art/signal.html', title: 'Signal' }
+];
+
+var INTERVAL = 5 * 60;
+var current = 0;
+var paused = false;
+var elapsed = 0;
+var tickId = null;
+
+var titleEl = document.getElementById('title');
+var indexEl = document.getElementById('index');
+var timerEl = document.getElementById('timer');
+var progressEl = document.getElementById('progress');
+var pauseBtn = document.getElementById('pauseBtn');
+var fsBtn = document.getElementById('fsBtn');
+
+var iframeA = document.createElement('iframe');
+var iframeB = document.createElement('iframe');
+document.body.appendChild(iframeA);
+document.body.appendChild(iframeB);
+var activeFrame = iframeA;
+
+function showPiece(idx, skipTransition) {
+  current = ((idx % pieces.length) + pieces.length) % pieces.length;
+  var piece = pieces[current];
+
+  titleEl.textContent = piece.title;
+  indexEl.textContent = (current + 1) + ' / ' + pieces.length;
+
+  var incoming = activeFrame === iframeA ? iframeB : iframeA;
+
+  if (skipTransition) {
+    incoming.style.transition = 'none';
+    activeFrame.style.transition = 'none';
+  }
+
+  incoming.onload = function () {
+    try {
+      var win = incoming.contentWindow;
+      if (win && typeof win.restart === 'function') win.restart();
+    } catch (e) {}
+  };
+
+  incoming.src = piece.src;
+  incoming.classList.add('active');
+  activeFrame.classList.remove('active');
+
+  if (skipTransition) {
+    void incoming.offsetHeight;
+    incoming.style.transition = '';
+    activeFrame.style.transition = '';
+  }
+
+  var outgoing = activeFrame;
+  setTimeout(function () {
+    outgoing.src = 'about:blank';
+    outgoing.onload = null;
+  }, skipTransition ? 100 : 2000);
+
+  activeFrame = incoming;
+  elapsed = 0;
+  updateProgress();
+}
+
+function next() { showPiece(current + 1); }
+function prev() { showPiece(current - 1); }
+
+function togglePause() {
+  paused = !paused;
+  pauseBtn.textContent = paused ? 'Resume' : 'Pause';
+  if (paused) {
+    pauseBtn.classList.add('active-btn');
+  } else {
+    pauseBtn.classList.remove('active-btn');
+  }
+}
+
+function shuffle() {
+  for (var i = pieces.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var tmp = pieces[i];
+    pieces[i] = pieces[j];
+    pieces[j] = tmp;
+  }
+  showPiece(0);
+}
+
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(function(){});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+document.addEventListener('fullscreenchange', function () {
+  fsBtn.textContent = document.fullscreenElement ? 'Exit FS' : 'Fullscreen';
+});
+
+function formatTime(s) {
+  var m = Math.floor(s / 60);
+  var sec = s % 60;
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+function updateProgress() {
+  var pct = (elapsed / INTERVAL) * 100;
+  progressEl.style.width = Math.min(pct, 100) + '%';
+  timerEl.textContent = formatTime(INTERVAL - elapsed);
+}
+
+function tick() {
+  if (!paused) {
+    elapsed++;
+    updateProgress();
+    if (elapsed >= INTERVAL) {
+      next();
+    }
+  }
+}
+
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  else if (e.key === 'ArrowLeft') { e.preventDefault(); prev(); }
+  else if (e.key === 'p') { togglePause(); }
+  else if (e.key === 'f') { toggleFullscreen(); }
+  else if (e.key === 's') { shuffle(); }
+});
+
+showPiece(0, true);
+tickId = setInterval(tick, 1000);
+
+window.next = next;
+window.prev = prev;
+window.togglePause = togglePause;
+window.toggleFullscreen = toggleFullscreen;
+window.shuffle = shuffle;
+
+})();
+</script>
+</body>
+</html>
